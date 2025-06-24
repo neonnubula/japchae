@@ -55,6 +55,35 @@ class StorageService with ChangeNotifier {
     notifyListeners();
   }
 
+  // Add method to retrieve today's goal
+  Goal? getTodayGoal() {
+    final now = DateTime.now();
+    for (final goal in _goalsBox.values) {
+      if (goal.date.year == now.year &&
+          goal.date.month == now.month &&
+          goal.date.day == now.day) {
+        return goal;
+      }
+    }
+    return null;
+  }
+
+  // Convenience method to create or update today's goal text
+  Future<void> setTodayGoal(String text) async {
+    final existingGoal = getTodayGoal();
+    if (existingGoal != null) {
+      existingGoal.text = text;
+      await existingGoal.save();
+    } else {
+      final newGoal = Goal()
+        ..text = text
+        ..date = DateTime.now()
+        ..isCompleted = false;
+      await _goalsBox.add(newGoal);
+    }
+    notifyListeners();
+  }
+
   // --- Settings ---
 
   bool get dailyNotifications => _settingsBox.get(_dailyNotificationsKey, defaultValue: true) as bool;

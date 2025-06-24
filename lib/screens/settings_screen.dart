@@ -8,15 +8,13 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A0A0A),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Settings'),
       ),
       body: Consumer<StorageService>(
         builder: (context, storageService, child) {
@@ -29,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
                   onChanged: (value) {
                     storageService.setDailyNotifications(value);
                   },
-                  activeColor: const Color(0xFF003D7C),
+                  activeColor: const Color(0xFF0066CC),
                 ),
               ),
               if (storageService.dailyNotifications)
@@ -48,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
                   onChanged: (value) {
                     storageService.setAskAboutYesterday(value);
                   },
-                  activeColor: const Color(0xFF003D7C),
+                  activeColor: const Color(0xFF0066CC),
                 ),
                 isThreeLine: true,
               ),
@@ -78,9 +76,9 @@ class SettingsScreen extends StatelessWidget {
     bool isThreeLine = false,
   }) {
     return ListTile(
-      title: Text(title, style: const TextStyle(color: Colors.white)),
+      title: Text(title),
       subtitle: subtitle != null
-          ? Text(subtitle, style: TextStyle(color: Colors.grey[400]))
+          ? Text(subtitle, style: TextStyle(color: Colors.grey[600]))
           : null,
       trailing: trailing,
       onTap: onTap,

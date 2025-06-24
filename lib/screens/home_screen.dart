@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:japchae/models/goal_model.dart';
 import 'package:japchae/screens/history_screen.dart';
 import 'package:japchae/screens/settings_screen.dart';
 import 'package:japchae/services/storage_service.dart';
@@ -20,7 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final storageService = Provider.of<StorageService>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -58,57 +56,112 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 60),
-                const Text(
-                  'What is the most important thing to achieve today to advance your goals?',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                TextField(
-                  controller: _dailyGoalController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
-                    hintText: 'E.g., Ship the new landing page...',
-                    hintStyle: TextStyle(color: Colors.grey[600]),
-                    filled: true,
-                    fillColor: const Color(0xFF1A1A1A),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_dailyGoalController.text.isNotEmpty) {
-                      final newGoal = Goal()
-                        ..text = _dailyGoalController.text
-                        ..date = DateTime.now()
-                        ..isCompleted = false;
-                      storageService.addGoal(newGoal);
-                      _dailyGoalController.clear();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Goal for today set!')),
+                Builder(
+                  builder: (context) {
+                    final todayGoal = storageService.getTodayGoal();
+                    if (todayGoal == null) {
+                      // Show input to set today's goal
+                      return Column(
+                        children: [
+                          const Text(
+                            'What is the most important thing to achieve today to advance your goals?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          TextField(
+                            controller: _dailyGoalController,
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: 'E.g., Ship the new landing page...',
+                              hintStyle: TextStyle(color: Colors.grey[600]),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            maxLines: 3,
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () {
+                              if (_dailyGoalController.text.isNotEmpty) {
+                                storageService.setTodayGoal(_dailyGoalController.text);
+                                _dailyGoalController.clear();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Goal for today set!')),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0066CC),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              "Set Today's Goal",
+                              style: TextStyle(fontSize: 18, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Show today's goal with edit option
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            "Today's Focus",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    todayGoal.text,
+                                    style: const TextStyle(color: Colors.black87, fontSize: 18),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit, color: Colors.yellow),
+                                  onPressed: () {
+                                    _showEditGoalDialog(
+                                      context,
+                                      "Today's Goal",
+                                      todayGoal.text,
+                                      (newValue) {
+                                        storageService.setTodayGoal(newValue);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       );
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF003D7C),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    "Set Today's Goal",
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
                 ),
               ],
             ),
@@ -116,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color(0xFF0A0A0A),
+        color: Colors.white,
         elevation: 0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -128,8 +181,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const HistoryScreen()),
                 );
               },
-              icon: const Icon(Icons.history, color: Colors.white),
-              label: const Text('See History', style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.history, color: Colors.black87),
+              label: const Text('See History', style: TextStyle(color: Colors.black87)),
             ),
             TextButton.icon(
               onPressed: () {
@@ -138,8 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const SettingsScreen()),
                 );
               },
-              icon: const Icon(Icons.settings, color: Colors.white),
-              label: const Text('Settings', style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.settings, color: Colors.black87),
+              label: const Text('Settings', style: TextStyle(color: Colors.black87)),
             ),
           ],
         ),
@@ -159,26 +212,45 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1A1A),
-          title: Text('Edit $title', style: const TextStyle(color: Colors.white)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          title: Text(
+            'Edit $title',
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           content: TextField(
             controller: controller,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
               hintText: 'Enter your goal',
-              hintStyle: TextStyle(color: Colors.grey),
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
             ),
             autofocus: true,
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            TextButton(
-              child: const Text('Save', style: TextStyle(color: Colors.white)),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0066CC),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Save'),
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
@@ -192,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildGoalCard(String title, String text) {
     return Card(
-      color: const Color(0xFF1A1A1A),
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -204,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    color: Colors.grey[400],
+                    color: Colors.grey[800],
                     fontSize: 12,
                     letterSpacing: 1.5,
                   ),
@@ -219,10 +291,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Text(
                     text,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    style: const TextStyle(color: Colors.black87, fontSize: 16),
                   ),
                 ),
-                const Icon(Icons.edit, color: Colors.yellow, size: 16),
+                const Icon(Icons.edit, color: Colors.amber, size: 16),
               ],
             )
           ],

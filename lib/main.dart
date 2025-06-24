@@ -34,8 +34,24 @@ class JapchaeApp extends StatelessWidget {
     return MaterialApp(
       title: 'Japchae',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF0066CC),
+          brightness: Brightness.light,
+          background: const Color(0xFFF9F7F3), // cream
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF9F7F3),
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderSide: BorderSide.none),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFFF9F7F3),
+          foregroundColor: Colors.black,
+          elevation: 0,
+          centerTitle: true,
+        ),
       ),
       home: const HomeScreen(),
     );

@@ -89,26 +89,30 @@ class _HomeScreenState extends State<HomeScreen> {
                             maxLines: 3,
                           ),
                           const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (_dailyGoalController.text.isNotEmpty) {
-                                storageService.setTodayGoal(_dailyGoalController.text);
-                                _dailyGoalController.clear();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Goal for today set!')),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0066CC),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                if (_dailyGoalController.text.isNotEmpty) {
+                                  storageService.setTodayGoal(_dailyGoalController.text);
+                                  _dailyGoalController.clear();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Goal for today set!')),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF004C9F),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              "Set Today's Goal",
-                              style: TextStyle(fontSize: 18, color: Colors.white),
+                              child: const Text(
+                                "Set Today's Goal",
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                              ),
                             ),
                           ),
                         ],

@@ -134,4 +134,30 @@ class StorageService with ChangeNotifier {
     }
     _notificationService.scheduleDailyNotification(scheduledDate);
   }
+
+  // --- Streak logic ---
+  int getCurrentStreak() {
+    // Returns number of consecutive days (including today) with completed goals
+    final goalsByDate = <DateTime, Goal>{};
+    for (final g in _goalsBox.values) {
+      final key = DateTime(g.date.year, g.date.month, g.date.day);
+      // Pick the first completed goal for each day (if any)
+      if (!goalsByDate.containsKey(key) && g.isCompleted) {
+        goalsByDate[key] = g;
+      }
+    }
+
+    int streak = 0;
+    DateTime day = DateTime.now();
+    while (true) {
+      final key = DateTime(day.year, day.month, day.day);
+      if (goalsByDate.containsKey(key)) {
+        streak += 1;
+        day = day.subtract(const Duration(days: 1));
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
 } 

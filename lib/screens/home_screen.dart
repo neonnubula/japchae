@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:japchae/screens/history_screen.dart';
 import 'package:japchae/screens/settings_screen.dart';
+import 'package:japchae/screens/streak_screen.dart';
 import 'package:japchae/services/storage_service.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,33 +31,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                   onTap: () => _showEditGoalDialog(
                     context,
-                    'North Star Goal',
+                    'Major Goal',
                     storageService.northStarGoal,
                     (newValue) => storageService.setNorthStarGoal(newValue),
                   ),
                   child: _buildGoalCard(
-                    'NORTH STAR GOAL',
+                    'MAJOR GOAL',
                     storageService.northStarGoal.isEmpty
                         ? 'Tap to set your goal'
                         : storageService.northStarGoal,
+                    infoDescription:
+                        'Your Major Goal is the overarching objective that guides your daily focus.'
                   ),
                 ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () => _showEditGoalDialog(
-                    context,
-                    'Multi-Day Goal',
-                    storageService.multiDayGoal,
-                    (newValue) => storageService.setMultiDayGoal(newValue),
+                const SizedBox(height: 24),
+                // Streak counter
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: _buildGoalCard(
-                    'MULTI-DAY GOAL',
-                    storageService.multiDayGoal.isEmpty
-                        ? 'Tap to set your goal'
-                        : storageService.multiDayGoal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.local_fire_department, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${storageService.getCurrentStreak()} day streak',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
                 Builder(
                   builder: (context) {
                     final todayGoal = storageService.getTodayGoal();
@@ -146,19 +155,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: const TextStyle(color: Colors.black87, fontSize: 18),
                                   ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.yellow),
-                                  onPressed: () {
-                                    _showEditGoalDialog(
-                                      context,
-                                      "Today's Goal",
-                                      todayGoal.text,
-                                      (newValue) {
-                                        storageService.setTodayGoal(newValue);
-                                      },
-                                    );
-                                  },
-                                ),
+                                if (todayGoal.isCompleted)
+                                  IconButton(
+                                    icon: const Icon(Icons.share, color: Colors.black54),
+                                    onPressed: () {
+                                      Share.share('I just finished my goal for today: "${todayGoal.text}"!');
+                                    },
+                                  )
+                                else
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.amber),
+                                    onPressed: () {
+                                      _showEditGoalDialog(
+                                        context,
+                                        "Today's Goal",
+                                        todayGoal.text,
+                                        (newValue) {
+                                          storageService.setTodayGoal(newValue);
+                                        },
+                                      );
+                                    },
+                                  ),
                               ],
                             ),
                           ),
@@ -186,7 +203,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               icon: const Icon(Icons.history, color: Colors.black87),
-              label: const Text('See History', style: TextStyle(color: Colors.black87)),
+              label: const Text('History', style: TextStyle(color: Colors.black87)),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const StreakScreen()),
+                );
+              },
+              icon: const Icon(Icons.local_fire_department, color: Colors.orange),
+              label: const Text('Streak', style: TextStyle(color: Colors.black87)),
             ),
             TextButton.icon(
               onPressed: () {
@@ -266,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGoalCard(String title, String text) {
+  Widget _buildGoalCard(String title, String text, {String? infoDescription}) {
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -286,7 +313,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const Spacer(),
-                const Icon(Icons.info_outline, color: Colors.grey, size: 16),
+                if (infoDescription != null)
+                  IconButton(
+                    icon: const Icon(Icons.info_outline, color: Colors.grey, size: 16),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(title),
+                          content: Text(infoDescription),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
             const SizedBox(height: 8),

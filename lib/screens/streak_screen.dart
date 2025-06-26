@@ -31,7 +31,7 @@ class StreakScreen extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: streak > 0
                       ? () {
-                          Share.share('I\'m on a $streak-day goal streak in Japchae! 🚀');
+                          Share.share('I\'ve got a $streak day streak by completing today\'s goal on the Most Important Thing app!');
                         }
                       : null,
                   icon: const Icon(Icons.share),

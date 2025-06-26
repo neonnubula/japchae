@@ -52,7 +52,8 @@ class HistoryScreen extends StatelessWidget {
                       IconButton(
                         icon: const Icon(Icons.share, color: Colors.black54),
                         onPressed: () {
-                          Share.share('I completed my goal "${goal.text}" today in Japchae!');
+                          final streak = storageService.getCurrentStreak();
+                          Share.share('I\'ve got a $streak day streak by completing today\'s goal: "${goal.text}" on the Most Important Thing app!');
                         },
                       ),
                   ],

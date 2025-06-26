@@ -137,27 +137,32 @@ class StorageService with ChangeNotifier {
 
   // --- Streak logic ---
   int getCurrentStreak() {
-    // Returns number of consecutive days (including today) with completed goals
-    final goalsByDate = <DateTime, Goal>{};
+    // Consecutive days with completed goals. If today isn't completed yet,
+    // we still show the streak up to yesterday so users don't see "0".
+
+    // Build a set of dates (yyyy-mm-dd at midnight) that have at least one
+    // completed goal.
+    final completedDates = <DateTime>{};
     for (final g in _goalsBox.values) {
-      final key = DateTime(g.date.year, g.date.month, g.date.day);
-      // Pick the first completed goal for each day (if any)
-      if (!goalsByDate.containsKey(key) && g.isCompleted) {
-        goalsByDate[key] = g;
+      if (g.isCompleted) {
+        completedDates.add(DateTime(g.date.year, g.date.month, g.date.day));
       }
     }
 
     int streak = 0;
     DateTime day = DateTime.now();
-    while (true) {
-      final key = DateTime(day.year, day.month, day.day);
-      if (goalsByDate.containsKey(key)) {
-        streak += 1;
-        day = day.subtract(const Duration(days: 1));
-      } else {
-        break;
-      }
+
+    // If today is not yet in the set, start counting from yesterday so we
+    // preserve the existing streak.
+    if (!completedDates.contains(DateTime(day.year, day.month, day.day))) {
+      day = day.subtract(const Duration(days: 1));
     }
+
+    while (completedDates.contains(DateTime(day.year, day.month, day.day))) {
+      streak += 1;
+      day = day.subtract(const Duration(days: 1));
+    }
+
     return streak;
   }
 } 

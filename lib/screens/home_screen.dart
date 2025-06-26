@@ -147,34 +147,61 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    todayGoal.text,
-                                    style: const TextStyle(color: Colors.black87, fontSize: 18),
-                                  ),
-                                ),
-                                if (todayGoal.isCompleted)
-                                  IconButton(
-                                    icon: const Icon(Icons.share, color: Colors.black54),
-                                    onPressed: () {
-                                      Share.share('I just finished my goal for today: "${todayGoal.text}"!');
-                                    },
-                                  )
-                                else
-                                  IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.amber),
-                                    onPressed: () {
-                                      _showEditGoalDialog(
-                                        context,
-                                        "Today's Goal",
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
                                         todayGoal.text,
-                                        (newValue) {
-                                          storageService.setTodayGoal(newValue);
+                                        style: const TextStyle(color: Colors.black87, fontSize: 18),
+                                      ),
+                                    ),
+                                    if (todayGoal.isCompleted)
+                                      IconButton(
+                                        icon: const Icon(Icons.share, color: Colors.black54),
+                                        onPressed: () {
+                                          final streak = storageService.getCurrentStreak();
+                                          Share.share('I\'ve got a $streak day streak by completing today\'s goal: "${todayGoal.text}" on the Most Important Thing app!');
                                         },
-                                      );
-                                    },
+                                      )
+                                    else
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, color: Colors.amber),
+                                        onPressed: () {
+                                          _showEditGoalDialog(
+                                            context,
+                                            "Today's Goal",
+                                            todayGoal.text,
+                                            (newValue) {
+                                              storageService.setTodayGoal(newValue);
+                                            },
+                                          );
+                                        },
+                                      ),
+                                  ],
+                                ),
+                                if (!todayGoal.isCompleted)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 12),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF006E1C), // green
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(vertical: 14),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          todayGoal.isCompleted = true;
+                                          await storageService.updateGoal(todayGoal);
+                                        },
+                                        child: const Text('Mark as Completed'),
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),

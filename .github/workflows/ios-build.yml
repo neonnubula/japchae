@@ -53,18 +53,22 @@ jobs:
 
       # Install provisioning profile
       - name: Install provisioning profile
-        if: env.APPLE_TEAM_ID != ''
         env:
           PROVISION_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PROVISION_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          echo "$PROVISION_PROFILE" | base64 --decode > "~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision"
 
-      # Write App Store Connect private key for automatic provisioning
-      - name: Write ASC API key
+      # Extract profile UUID so xcodebuild can use it for manual signing
+      - name: Export profile UUID
+        run: |
+          PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision"
+          PROFILE_UUID=$(security cms -D -i "$PROFILE_PATH" | /usr/libexec/PlistBuddy -c "Print:UUID" /dev/stdin)
+          echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+
+      # Write App Store Connect key (still needed later for fastlane deliver)
+      - name: Write ASC API key to disk
         env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
         run: |
           KEY_PATH="$RUNNER_TEMP/asc_key.p8"
@@ -74,7 +78,7 @@ jobs:
           echo "ASC_ISSUER_ID=$ASC_ISSUER_ID" >> $GITHUB_ENV
 
       # Build and export IPA via xcodebuild
-      - name: Archive with xcodebuild
+      - name: Archive with xcodebuild (manual signing)
         run: |
           xcodebuild \
             -workspace ios/Runner.xcworkspace \
@@ -83,12 +87,10 @@ jobs:
             -destination 'generic/platform=iOS' \
             -archivePath build/Runner.xcarchive \
             DEVELOPMENT_TEAM=$APPLE_TEAM_ID \
-            CODE_SIGN_STYLE=Automatic \
-            clean archive \
-            -allowProvisioningUpdates \
-            -authenticationKeyID $ASC_KEY_ID \
-            -authenticationKeyIssuerID $ASC_ISSUER_ID \
-            -authenticationKeyPath $ASC_KEY_PATH
+            CODE_SIGN_STYLE=Manual \
+            PROVISIONING_PROFILE_SPECIFIER=$PROFILE_UUID \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            clean archive
 
       - name: Export IPA
         run: |

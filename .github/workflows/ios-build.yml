@@ -28,7 +28,6 @@ jobs:
       # If you have distribution certificates & provisioning profiles, decode and install them
       # secrets.APPLE_CERTIFICATE_P12 and secrets.APPLE_CERT_PASSWORD should be set in repo secrets
       - name: Install distribution certificate (optional)
-        if: ${{ secrets.APPLE_CERTIFICATE_P12 != '' }}
         env:
           CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}

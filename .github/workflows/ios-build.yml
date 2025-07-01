@@ -15,6 +15,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Fail fast if any required secret is missing or empty
+      - name: Verify required secrets
+        run: |
+          for var in APPLE_TEAM_ID APPLE_CERTIFICATE_P12 APPLE_CERT_PASSWORD \
+              APPLE_PROVISIONING_PROFILE ASC_API_KEY_P8 ASC_KEY_ID ASC_ISSUER_ID; do
+            if [ -z "${!var}" ]; then
+              echo "::error::${var} is not set or empty"
+              exit 1
+            fi
+          done
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:

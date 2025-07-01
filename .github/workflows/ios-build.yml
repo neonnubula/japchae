@@ -57,6 +57,8 @@ jobs:
           PROVISION_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
         run: |
           PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
+          # Ensure the Provisioning Profiles directory exists
+          mkdir -p "$PROFILE_DIR"
           echo "$PROVISION_PROFILE" | base64 --decode > "$PROFILE_DIR/profile.mobileprovision"
 
       # Extract profile UUID so xcodebuild can use it for manual signing

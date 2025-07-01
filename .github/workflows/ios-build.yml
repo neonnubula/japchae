@@ -31,7 +31,7 @@ jobs:
           rm -rf ios/Flutter/Generated.xcconfig
           flutter clean
           flutter pub get
-          flutter build ios --release --no-codesign --verbose
+          flutter build ios --release --no-codesign
 
       # Extra clean for CocoaPods and Xcode Derived Data
       - name: Clean CocoaPods and Xcode Derived Data
@@ -110,7 +110,7 @@ jobs:
           ruby-version: '3.2'
 
       - name: Install fastlane
-        run: gem install fastlane -NV
+        run: gem install fastlane -N
 
       - name: Upload to TestFlight via fastlane
         env:

@@ -1,0 +1,81 @@
+name: iOS Release Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths: [ 'lib/**', 'ios/**', 'pubspec.*', '.github/workflows/ios-build.yml' ]
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      # Build iOS without codesign; Xcode will sign when exporting with provided certificates
+      - name: Flutter build iOS
+        run: flutter build ios --release --no-codesign
+
+      # If you have distribution certificates & provisioning profiles, decode and install them
+      # secrets.APPLE_CERTIFICATE_P12 and secrets.APPLE_CERT_PASSWORD should be set in repo secrets
+      - name: Install distribution certificate (optional)
+        if: ${{ secrets.APPLE_CERTIFICATE_P12 != '' }}
+        env:
+          CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+        run: |
+          echo "$APPLE_CERTIFICATE_P12" | base64 --decode > certificate.p12
+          security create-keychain -p "temp" build.keychain
+          security import certificate.p12 -t agg -k build.keychain -P "$CERT_PASSWORD" -A
+          security list-keychains -d user -s build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "temp" build.keychain
+
+      # Build and export IPA via xcodebuild
+      - name: Archive with xcodebuild
+        run: |
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            archive
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportOptionsPlist ios/Flutter/ExportOptions.plist \
+            -exportPath build/export
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: japchae-ios-ipa
+          path: build/export/*.ipa
+
+      # ---- Fastlane: upload to TestFlight ----
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install fastlane
+        run: gem install fastlane -NV
+
+      - name: Upload to TestFlight via fastlane
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          cd ios && fastlane ios upload_testflight 

@@ -44,19 +44,21 @@ jobs:
           cd ..
           rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
-      # If you have distribution certificates & provisioning profiles, decode and install them
-      # secrets.APPLE_CERTIFICATE_P12 and secrets.APPLE_CERT_PASSWORD should be set in repo secrets
-      - name: Install distribution certificate (optional)
+      # Import signing certificate & provisioning profile (requires secrets)
+      - name: Import code signing certs & profiles
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.APPLE_CERT_PASSWORD }}
+
+      # Install provisioning profile
+      - name: Install provisioning profile
+        if: env.APPLE_TEAM_ID != ''
         env:
-          CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
-          APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
+          PROVISION_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
         run: |
-          echo "$APPLE_CERTIFICATE_P12" | base64 --decode > certificate.p12
-          security create-keychain -p "temp" build.keychain
-          security import certificate.p12 -t agg -k build.keychain -P "$CERT_PASSWORD" -A
-          security list-keychains -d user -s build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "temp" build.keychain
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$PROVISION_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
       # Write App Store Connect private key for automatic provisioning
       - name: Write ASC API key

@@ -41,6 +41,13 @@ jobs:
           security default-keychain -s build.keychain
           security unlock-keychain -p "temp" build.keychain
 
+      # Write App Store Connect private key for automatic provisioning
+      - name: Write ASC API key
+        env:
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+        run: |
+          echo "$ASC_API_KEY_P8" > asc_key.p8
+
       # Build and export IPA via xcodebuild
       - name: Archive with xcodebuild
         run: |
@@ -53,7 +60,10 @@ jobs:
             DEVELOPMENT_TEAM=$APPLE_TEAM_ID \
             CODE_SIGN_STYLE=Automatic \
             clean archive \
-            -allowProvisioningUpdates
+            -allowProvisioningUpdates \
+            -authenticationKeyID $ASC_KEY_ID \
+            -authenticationKeyIssuerID $ASC_ISSUER_ID \
+            -authenticationKeyPath asc_key.p8
 
       - name: Export IPA
         run: |
@@ -61,7 +71,10 @@ jobs:
             -archivePath build/Runner.xcarchive \
             -exportOptionsPlist ios/Flutter/ExportOptions.plist \
             -exportPath build/export \
-            -allowProvisioningUpdates
+            -allowProvisioningUpdates \
+            -authenticationKeyID $ASC_KEY_ID \
+            -authenticationKeyIssuerID $ASC_ISSUER_ID \
+            -authenticationKeyPath asc_key.p8
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4

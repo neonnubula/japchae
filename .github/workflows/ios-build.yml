@@ -23,9 +23,15 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      # Build iOS without codesign; Xcode will sign when exporting with provided certificates
-      - name: Flutter build iOS
-        run: flutter build ios --release --no-codesign
+      # Clean any cached iOS build data that might have old bundle ID
+      - name: Clean iOS build cache
+        run: |
+          rm -rf ios/build
+          rm -rf ios/.symlinks
+          rm -rf ios/Flutter/Generated.xcconfig
+          flutter clean
+          flutter pub get
+          flutter build ios --release --no-codesign
 
       # If you have distribution certificates & provisioning profiles, decode and install them
       # secrets.APPLE_CERTIFICATE_P12 and secrets.APPLE_CERT_PASSWORD should be set in repo secrets

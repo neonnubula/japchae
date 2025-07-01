@@ -33,6 +33,15 @@ jobs:
           flutter pub get
           flutter build ios --release --no-codesign --verbose
 
+      # Extra clean for CocoaPods and Xcode Derived Data
+      - name: Clean CocoaPods and Xcode Derived Data
+        run: |
+          rm -rf ios/Pods
+          rm -rf ios/Podfile.lock
+          pod cache clean --all
+          pod install
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+
       # If you have distribution certificates & provisioning profiles, decode and install them
       # secrets.APPLE_CERTIFICATE_P12 and secrets.APPLE_CERT_PASSWORD should be set in repo secrets
       - name: Install distribution certificate (optional)

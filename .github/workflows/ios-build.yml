@@ -44,9 +44,15 @@ jobs:
       # Write App Store Connect private key for automatic provisioning
       - name: Write ASC API key
         env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
         run: |
-          echo "$ASC_API_KEY_P8" > asc_key.p8
+          KEY_PATH="$RUNNER_TEMP/asc_key.p8"
+          echo "$ASC_API_KEY_P8" > "$KEY_PATH"
+          echo "ASC_KEY_PATH=$KEY_PATH" >> $GITHUB_ENV
+          echo "ASC_KEY_ID=$ASC_KEY_ID" >> $GITHUB_ENV
+          echo "ASC_ISSUER_ID=$ASC_ISSUER_ID" >> $GITHUB_ENV
 
       # Build and export IPA via xcodebuild
       - name: Archive with xcodebuild
@@ -63,7 +69,7 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyID $ASC_KEY_ID \
             -authenticationKeyIssuerID $ASC_ISSUER_ID \
-            -authenticationKeyPath asc_key.p8
+            -authenticationKeyPath $ASC_KEY_PATH
 
       - name: Export IPA
         run: |
@@ -74,7 +80,7 @@ jobs:
             -allowProvisioningUpdates \
             -authenticationKeyID $ASC_KEY_ID \
             -authenticationKeyIssuerID $ASC_ISSUER_ID \
-            -authenticationKeyPath asc_key.p8
+            -authenticationKeyPath $ASC_KEY_PATH
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4

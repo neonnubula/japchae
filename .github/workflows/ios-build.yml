@@ -97,13 +97,11 @@ jobs:
           fi
           echo "Top of decoded profile plist (should start with <?xml ... >):"
           security cms -D -i "$PROFILE_PATH" | head -n 10
-
-      # Extract profile UUID so xcodebuild can use it for manual signing
-      - name: Export profile UUID
-        run: |
-          PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision"
+          
+          # ---- Extract UUID for xcodebuild ----
           PROFILE_UUID=$(security cms -D -i "$PROFILE_PATH" | /usr/libexec/PlistBuddy -c "Print:UUID" /dev/stdin)
           echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
+          echo "Profile UUID: $PROFILE_UUID"
 
       # Write App Store Connect key (still needed later for fastlane deliver)
       - name: Write ASC API key to disk

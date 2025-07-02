@@ -104,7 +104,10 @@ jobs:
           echo "DEBUG: Testing security cms again..."
           security cms -D -i "$PROFILE_PATH" | head -n 3
           echo "DEBUG: Now extracting UUID..."
-          PROFILE_UUID=$(security cms -D -i "$PROFILE_PATH" | /usr/libexec/PlistBuddy -c "Print:UUID" /dev/stdin)
+          # Decode to temp file since PlistBuddy needs a file path, not stdin
+          TEMP_PLIST="/tmp/profile.plist"
+          security cms -D -i "$PROFILE_PATH" > "$TEMP_PLIST"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c "Print:UUID" "$TEMP_PLIST")
           echo "PROFILE_UUID=$PROFILE_UUID" >> $GITHUB_ENV
           echo "Profile UUID: $PROFILE_UUID"
 

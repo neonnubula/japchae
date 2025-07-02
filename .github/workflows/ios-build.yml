@@ -75,6 +75,15 @@ jobs:
         env:
           PROVISION_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
         run: |
+          # ---- DEBUG: Check secret content ----
+          echo "PROVISION_PROFILE length: ${#PROVISION_PROFILE}"
+          echo "First 50 chars: ${PROVISION_PROFILE:0:50}"
+          if [ ${#PROVISION_PROFILE} -eq 0 ]; then
+            echo "::error::APPLE_PROVISIONING_PROFILE secret is completely empty!"
+            exit 1
+          fi
+          
+          # ---- ACTUAL WORK ----
           PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
           # Ensure the Provisioning Profiles directory exists
           mkdir -p "$PROFILE_DIR"

@@ -176,11 +176,17 @@ jobs:
             -exportOptionsPlist ios/ExportOptions.plist \
             -exportPath build/export
 
+      # Debug: show contents of export directory to help diagnose missing IPA
+      - name: List exported files
+        run: |
+          echo "Listing build/export directory:" && ls -R build/export || true
+
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
           name: japchae-ios-ipa
-          path: build/export/*.ipa
+          path: build/export/**/*.ipa
+          if-no-files-found: error
 
       # ---- Fastlane: upload to TestFlight ----
       - name: Set up Ruby

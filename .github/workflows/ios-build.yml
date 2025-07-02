@@ -79,6 +79,15 @@ jobs:
           # Ensure the Provisioning Profiles directory exists
           mkdir -p "$PROFILE_DIR"
           echo "$PROVISION_PROFILE" | base64 --decode > "$PROFILE_DIR/profile.mobileprovision"
+          # ---- DEBUG: verify decode ----
+          PROFILE_PATH="$PROFILE_DIR/profile.mobileprovision"
+          BYTES=$(stat -f%z "$PROFILE_PATH")
+          echo "Decoded provisioning profile size: ${BYTES} bytes"
+          if [ "$BYTES" -eq 0 ]; then
+            echo "::error::Decoded provisioning profile is empty – check APPLE_PROVISIONING_PROFILE secret" && exit 1
+          fi
+          echo "Top of decoded profile plist (should start with <?xml ... >):"
+          security cms -D -i "$PROFILE_PATH" | head -n 10
 
       # Extract profile UUID so xcodebuild can use it for manual signing
       - name: Export profile UUID

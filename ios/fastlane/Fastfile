@@ -10,13 +10,13 @@ platform :ios do
       in_house:    false
     )
 
-    # Xcode 15 may place the exported IPA inside a timestamped folder, so
-    # search recursively under build/export.
-    # Debug: list export directory contents so we can see what Fastlane sees
-    sh("echo '--- DEBUG: build/export contents ---' && ls -R ../build/export || true")
+    export_root = ENV["GITHUB_WORKSPACE"] + "/build/export"
 
-    # Look for IPA files directly in build/export and in subdirectories
-    ipa_path = Dir["../build/export/*.ipa", "../build/export/**/*.ipa"].first
+    # Debug: list export directory contents so we can see what Fastlane sees
+    sh("echo '--- DEBUG: export directory contents ---' && ls -R #{export_root} || true")
+
+    # Look for IPA files directly in export_root and in subdirectories
+    ipa_path = Dir["#{export_root}/*.ipa", "#{export_root}/**/*.ipa"].first
     UI.user_error!("No IPA found in ../build/export") unless ipa_path
     UI.message("Found IPA at: #{ipa_path}")
 

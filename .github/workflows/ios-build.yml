@@ -34,6 +34,26 @@ jobs:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
 
+      - name: Debug Secret Availability
+        env:
+          PROV_SECRET: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+        run: |
+          echo "Raw secret length: ${#PROV_SECRET}"
+          if [ -z "$PROV_SECRET" ]; then
+            echo "Secret is empty!"
+          else
+            echo "Secret is set (length: ${#PROV_SECRET})"
+          fi
+
+      - name: Debug Decoded Profile
+        run: |
+          echo "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 -d > profile.mobileprovision
+          if [ -s profile.mobileprovision ]; then
+            echo "Decoded file size: $(stat -f%z profile.mobileprovision)"
+          else
+            echo "Decoded file is empty or missing!"
+          fi
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:

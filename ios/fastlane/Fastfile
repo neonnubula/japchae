@@ -12,8 +12,10 @@ platform :ios do
 
     # Xcode 15 may place the exported IPA inside a timestamped folder, so
     # search recursively under build/export.
-    ipa_path = Dir["../build/export/**/*.ipa"].first
+    # Look for IPA files directly in build/export and in subdirectories
+    ipa_path = Dir["../build/export/*.ipa", "../build/export/**/*.ipa"].first
     UI.user_error!("No IPA found in ../build/export") unless ipa_path
+    UI.message("Found IPA at: #{ipa_path}")
 
     pilot(
       api_key: api_key,

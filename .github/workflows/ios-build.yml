@@ -17,6 +17,7 @@ jobs:
 
       # Fail fast if any required secret is missing or empty
       - name: Verify required secrets
+        shell: bash
         run: |
           for var in APPLE_TEAM_ID APPLE_CERTIFICATE_P12 APPLE_CERT_PASSWORD \
               APPLE_PROVISIONING_PROFILE ASC_API_KEY_P8 ASC_KEY_ID ASC_ISSUER_ID; do

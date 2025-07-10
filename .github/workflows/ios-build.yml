@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Ensure Xcode 16 (with iOS 18 SDK) is selected for the build
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16'
+
       - name: Load provisioning profile from repo
         shell: bash
         run: echo "APPLE_PROVISIONING_PROFILE=$(cat japchae.mobileprovision.b64.txt)" >> $GITHUB_ENV

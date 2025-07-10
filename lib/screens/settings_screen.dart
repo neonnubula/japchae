@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:japchae/services/storage_service.dart';
+import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -49,6 +50,49 @@ class SettingsScreen extends StatelessWidget {
                   activeColor: const Color(0xFF0066CC),
                 ),
                 isThreeLine: true,
+              ),
+              const Divider(color: Colors.grey),
+              _buildSettingsTile(
+                title: 'Export Data',
+                subtitle: 'Share your goals history and settings',
+                trailing: const Icon(Icons.share),
+                onTap: () async {
+                  try {
+                    final exportData = storageService.exportData();
+                    await Share.share(
+                      exportData,
+                      subject: 'My Goals Data - Most Important Thing App',
+                    );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Error exporting: ${e.toString()}')),
+                      );
+                    }
+                  }
+                },
+              ),
+              _buildSettingsTile(
+                title: 'App Info',
+                subtitle: 'Version 1.0.1 - Focus on what matters most',
+                trailing: const Icon(Icons.info),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Most Important Thing'),
+                      content: const Text(
+                        'Focus on what matters most. Set and track your daily most important goals.\n\nVersion 1.0.1\n\nMade with ❤️ for productivity',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ],
           );

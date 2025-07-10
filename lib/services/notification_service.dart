@@ -40,9 +40,12 @@ class NotificationService {
   }
 
   Future<void> scheduleDailyNotification(tz.TZDateTime scheduledTime) async {
+    // Cancel any existing notifications first
+    await cancelAllNotifications();
+    
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
-      'Japchae Goal',
+      'Most Important Thing',
       'What is the most important thing to achieve today?',
       scheduledTime,
       const NotificationDetails(

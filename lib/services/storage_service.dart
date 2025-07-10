@@ -1,8 +1,9 @@
 import 'package:hive/hive.dart';
-import 'package:japchae/models/goal_model.dart';
+import 'package:most_important_thing/models/goal_model.dart';
 import 'package:flutter/material.dart';
-import 'package:japchae/services/notification_service.dart';
+import 'package:most_important_thing/services/notification_service.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'dart:convert';
 
 class StorageService with ChangeNotifier {
   final NotificationService _notificationService;
@@ -11,6 +12,8 @@ class StorageService with ChangeNotifier {
 
   late Box<Goal> _goalsBox;
   late Box _settingsBox;
+  int? _cachedStreak;
+  final Set<DateTime> _completedDatesCache = {};
 
   static const String _goalsBoxName = 'goals';
   static const String _settingsBoxName = 'settings';
@@ -21,9 +24,20 @@ class StorageService with ChangeNotifier {
   static const String _notificationTimeKey = 'notificationTime';
 
   Future<void> init() async {
-    _goalsBox = await Hive.openBox<Goal>(_goalsBoxName);
-    _settingsBox = await Hive.openBox(_settingsBoxName);
-    _scheduleInitialNotification();
+    try {
+      // Create encryption key (in production, generate and store securely per user)
+      final encryptionKey = base64.decode('4Eh8M3b7cQ8K9x2L5n6P0w3R5t8Y1u4I7o0B2c5F6h9J');
+      final encryptionCipher = HiveAesCipher(encryptionKey);
+      
+      _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);
+      _settingsBox = await Hive.openBox(_settingsBoxName, encryptionCipher: encryptionCipher);
+      
+      _updateCompletedDatesCache();
+      _scheduleInitialNotification();
+    } catch (e) {
+      debugPrint('Error initializing storage: $e');
+      rethrow;
+    }
   }
 
   // --- Goals ---
@@ -46,13 +60,27 @@ class StorageService with ChangeNotifier {
   }
 
   Future<void> addGoal(Goal goal) async {
-    await _goalsBox.add(goal);
-    notifyListeners();
+    try {
+      await _goalsBox.add(goal);
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding goal: $e');
+      throw Exception('Failed to save goal. Please try again.');
+    }
   }
 
   Future<void> updateGoal(Goal goal) async {
-    await goal.save();
-    notifyListeners();
+    try {
+      await goal.save();
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating goal: $e');
+      throw Exception('Failed to update goal. Please try again.');
+    }
   }
 
   // Add method to retrieve today's goal
@@ -70,18 +98,30 @@ class StorageService with ChangeNotifier {
 
   // Convenience method to create or update today's goal text
   Future<void> setTodayGoal(String text) async {
-    final existingGoal = getTodayGoal();
-    if (existingGoal != null) {
-      existingGoal.text = text;
-      await existingGoal.save();
-    } else {
-      final newGoal = Goal()
-        ..text = text
-        ..date = DateTime.now()
-        ..isCompleted = false;
-      await _goalsBox.add(newGoal);
+    try {
+      final trimmedText = text.trim();
+      if (trimmedText.isEmpty) {
+        throw Exception('Goal cannot be empty');
+      }
+      
+      final existingGoal = getTodayGoal();
+      if (existingGoal != null) {
+        existingGoal.text = trimmedText;
+        await existingGoal.save();
+      } else {
+        final newGoal = Goal()
+          ..text = trimmedText
+          ..date = DateTime.now()
+          ..isCompleted = false;
+        await _goalsBox.add(newGoal);
+      }
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error setting today goal: $e');
+      rethrow;
     }
-    notifyListeners();
   }
 
   // --- Settings ---
@@ -135,34 +175,67 @@ class StorageService with ChangeNotifier {
     _notificationService.scheduleDailyNotification(scheduledDate);
   }
 
-  // --- Streak logic ---
-  int getCurrentStreak() {
-    // Consecutive days with completed goals. If today isn't completed yet,
-    // we still show the streak up to yesterday so users don't see "0".
-
-    // Build a set of dates (yyyy-mm-dd at midnight) that have at least one
-    // completed goal.
-    final completedDates = <DateTime>{};
+  // --- Cache management ---
+  void _updateCompletedDatesCache() {
+    _completedDatesCache.clear();
     for (final g in _goalsBox.values) {
       if (g.isCompleted) {
-        completedDates.add(DateTime(g.date.year, g.date.month, g.date.day));
+        _completedDatesCache.add(DateTime(g.date.year, g.date.month, g.date.day));
       }
     }
+  }
+
+  // --- Streak logic ---
+  int getCurrentStreak() {
+    // Return cached value if available
+    if (_cachedStreak != null) return _cachedStreak!;
 
     int streak = 0;
     DateTime day = DateTime.now();
 
     // If today is not yet in the set, start counting from yesterday so we
     // preserve the existing streak.
-    if (!completedDates.contains(DateTime(day.year, day.month, day.day))) {
+    final today = DateTime(day.year, day.month, day.day);
+    if (!_completedDatesCache.contains(today)) {
       day = day.subtract(const Duration(days: 1));
     }
 
-    while (completedDates.contains(DateTime(day.year, day.month, day.day))) {
+    // Use cached set for O(1) lookups
+    while (_completedDatesCache.contains(DateTime(day.year, day.month, day.day))) {
       streak += 1;
       day = day.subtract(const Duration(days: 1));
     }
 
+    _cachedStreak = streak;
     return streak;
+  }
+
+  // --- Data export ---
+  String exportData() {
+    try {
+      final allGoals = getAllGoals();
+      final exportData = {
+        'goals': allGoals.map((goal) => {
+          'text': goal.text,
+          'date': goal.date.toIso8601String(),
+          'isCompleted': goal.isCompleted,
+        }).toList(),
+        'northStarGoal': northStarGoal,
+        'multiDayGoal': multiDayGoal,
+        'exportDate': DateTime.now().toIso8601String(),
+      };
+      return jsonEncode(exportData);
+    } catch (e) {
+      debugPrint('Error exporting data: $e');
+      throw Exception('Failed to export data');
+    }
+  }
+
+  // --- Cleanup ---
+  @override
+  void dispose() {
+    _goalsBox.close();
+    _settingsBox.close();
+    super.dispose();
   }
 } 

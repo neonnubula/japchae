@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:japchae/screens/history_screen.dart';
-import 'package:japchae/screens/settings_screen.dart';
-import 'package:japchae/screens/streak_screen.dart';
-import 'package:japchae/services/storage_service.dart';
+import 'package:most_important_thing/screens/history_screen.dart';
+import 'package:most_important_thing/screens/settings_screen.dart';
+import 'package:most_important_thing/screens/streak_screen.dart';
+import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -19,11 +19,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final storageService = Provider.of<StorageService>(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final responsivePadding = screenWidth * 0.05;
 
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: EdgeInsets.all(responsivePadding),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,29 +100,48 @@ class _HomeScreenState extends State<HomeScreen> {
                             maxLines: 3,
                           ),
                           const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (_dailyGoalController.text.isNotEmpty) {
-                                  storageService.setTodayGoal(_dailyGoalController.text);
-                                  _dailyGoalController.clear();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Goal for today set!')),
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF004C9F),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                          Semantics(
+                            label: 'Set today\'s most important goal',
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  final text = _dailyGoalController.text.trim();
+                                  if (text.isEmpty) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Please enter a goal')),
+                                    );
+                                    return;
+                                  }
+                                  
+                                  try {
+                                    await storageService.setTodayGoal(text);
+                                    _dailyGoalController.clear();
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Goal for today set!')),
+                                      );
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error: ${e.toString()}')),
+                                      );
+                                    }
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF004C9F),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                "Set Today's Goal",
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                                child: const Text(
+                                  "Set Today's Goal",
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                                ),
                               ),
                             ),
                           ),
@@ -196,8 +217,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         onPressed: () async {
-                                          todayGoal.isCompleted = true;
-                                          await storageService.updateGoal(todayGoal);
+                                          final confirmed = await _showConfirmationDialog(
+                                            context,
+                                            'Complete Goal',
+                                            'Mark today\'s goal as completed?',
+                                          );
+                                          if (confirmed == true) {
+                                            try {
+                                              todayGoal.isCompleted = true;
+                                              await storageService.updateGoal(todayGoal);
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('Goal completed! 🎉')),
+                                                );
+                                              }
+                                            } catch (e) {
+                                              if (mounted) {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  SnackBar(content: Text('Error: ${e.toString()}')),
+                                                );
+                                              }
+                                            }
+                                          }
                                         },
                                         child: const Text('Mark as Completed'),
                                       ),
@@ -255,6 +296,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<bool?> _showConfirmationDialog(
+    BuildContext context,
+    String title,
+    String message,
+  ) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0066CC),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Confirm'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
     );
   }
 

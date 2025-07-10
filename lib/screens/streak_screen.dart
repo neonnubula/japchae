@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:japchae/services/storage_service.dart';
+import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:intl/intl.dart';
 
 class StreakScreen extends StatelessWidget {
   const StreakScreen({super.key});
@@ -15,32 +16,131 @@ class StreakScreen extends StatelessWidget {
       body: Consumer<StorageService>(
         builder: (context, storage, _) {
           final streak = storage.getCurrentStreak();
-          return Center(
+          final allGoals = storage.getAllGoals();
+          final completedGoals = allGoals.where((g) => g.isCompleted).toList();
+          
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  '$streak',
-                  style: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold),
+                // Main streak display
+                Semantics(
+                  label: 'Current streak: $streak days',
+                  child: Container(
+                    padding: const EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.local_fire_department,
+                          size: 60,
+                          color: Colors.orange,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          '$streak',
+                          style: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          streak == 1 ? 'Day Streak' : 'Days Streak',
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        if (streak > 0) ...[
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Share.share('I\'ve got a $streak day streak by completing my most important goals! Join me on the Most Important Thing app! 🔥');
+                            },
+                            icon: const Icon(Icons.share),
+                            label: const Text('Share Streak'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
-                const Text(
-                  'Day Streak',
-                  style: TextStyle(fontSize: 24),
+                const SizedBox(height: 30),
+                
+                // Stats
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'Total Goals',
+                        '${allGoals.length}',
+                        Icons.flag,
+                        Colors.blue,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildStatCard(
+                        'Completed',
+                        '${completedGoals.length}',
+                        Icons.check_circle,
+                        Colors.green,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: streak > 0
-                      ? () {
-                          Share.share('I\'ve got a $streak day streak by completing today\'s goal on the Most Important Thing app!');
-                        }
-                      : null,
-                  icon: const Icon(Icons.share),
-                  label: const Text('Share Streak'),
-                ),
+                
+                if (completedGoals.isNotEmpty) ...[
+                  const SizedBox(height: 30),
+                  Text(
+                    'Recent Completions',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 16),
+                  ...completedGoals.take(5).map((goal) => ListTile(
+                    leading: const Icon(Icons.check_circle, color: Colors.green),
+                    title: Text(goal.text),
+                    subtitle: Text(DateFormat.MMMd().format(goal.date)),
+                  )),
+                ],
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 30),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

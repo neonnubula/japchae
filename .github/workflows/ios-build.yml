@@ -103,7 +103,7 @@ jobs:
           echo "PROVISION_PROFILE length: ${#PROVISION_PROFILE}"
           echo "First 50 chars: ${PROVISION_PROFILE:0:50}"
           if [ ${#PROVISION_PROFILE} -eq 0 ]; then
-            echo "::error::APPLE_PROVISIONING_PROFILE secret is completely empty!"
+            echo "::error::APPLE_PROVISIONING_PROFILE is completely empty! Check that japchae.mobileprovision.b64.txt exists and contains valid base64 content"
             exit 1
           fi
           
@@ -117,7 +117,7 @@ jobs:
           BYTES=$(stat -f%z "$PROFILE_PATH")
           echo "Decoded provisioning profile size: ${BYTES} bytes"
           if [ "$BYTES" -eq 0 ]; then
-            echo "::error::Decoded provisioning profile is empty – check APPLE_PROVISIONING_PROFILE secret" && exit 1
+            echo "::error::Decoded provisioning profile is empty – check that japchae.mobileprovision.b64.txt contains valid base64 encoded content" && exit 1
           fi
           echo "Top of decoded profile plist (should start with <?xml ... >):"
           security cms -D -i "$PROFILE_PATH" | head -n 10

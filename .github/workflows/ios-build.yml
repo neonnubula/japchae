@@ -223,4 +223,4 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
         run: |
-          cd ios && fastlane ios upload_testflight 
+          cd ios && fastlane ios upload_testflight # Latest changes applied

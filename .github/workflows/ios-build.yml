@@ -19,6 +19,18 @@ jobs:
         shell: bash
         run: echo "APPLE_PROVISIONING_PROFILE=$(cat japchae.mobileprovision.b64.txt)" >> $GITHUB_ENV
 
+      # Extract version and build number from pubspec.yaml for Info.plist substitution
+      - name: Export Flutter version variables
+        shell: bash
+        run: |
+          VERSION_LINE=$(grep '^version:' pubspec.yaml)
+          VERSION=${VERSION_LINE#version: }
+          BUILD_NAME=${VERSION%%+*}
+          BUILD_NUMBER=${VERSION##*+}
+          echo "FLUTTER_BUILD_NAME=$BUILD_NAME" >> $GITHUB_ENV
+          echo "FLUTTER_BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+          echo "Using FLUTTER_BUILD_NAME=$BUILD_NAME, FLUTTER_BUILD_NUMBER=$BUILD_NUMBER"
+
       # Fail fast if any required secret is missing or empty
       - name: Verify required secrets
         shell: bash
@@ -72,7 +84,7 @@ jobs:
           rm -rf ios/Flutter/Generated.xcconfig
           flutter clean
           flutter pub get
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --build-name $FLUTTER_BUILD_NAME --build-number $FLUTTER_BUILD_NUMBER
 
       # Extra clean for CocoaPods and Xcode Derived Data
       - name: Clean CocoaPods and Xcode Derived Data

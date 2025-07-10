@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'dart:convert';
+import 'dart:typed_data'; // Added for Uint8List
 
 class StorageService with ChangeNotifier {
   final NotificationService _notificationService;
@@ -25,8 +26,13 @@ class StorageService with ChangeNotifier {
 
   Future<void> init() async {
     try {
-      // Create encryption key (in production, generate and store securely per user)
-      final encryptionKey = base64.decode('4Eh8M3b7cQ8K9x2L5n6P0w3R5t8Y1u4I7o0B2c5F6h9J');
+      // Use a valid 32-byte encryption key (replace with secure storage in production)
+      final encryptionKey = Uint8List.fromList([
+        1, 2, 3, 4, 5, 6, 7, 8,
+        9, 10, 11, 12, 13, 14, 15, 16,
+        17, 18, 19, 20, 21, 22, 23, 24,
+        25, 26, 27, 28, 29, 30, 31, 32
+      ]);
       final encryptionCipher = HiveAesCipher(encryptionKey);
       
       _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);

@@ -39,14 +39,12 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
 
       - name: Debug Secret Availability
-        env:
-          PROV_SECRET: ${{ env.APPLE_PROVISIONING_PROFILE }}
         run: |
-          echo "Raw secret length: ${#PROV_SECRET}"
-          if [ -z "$PROV_SECRET" ]; then
+          echo "Raw secret length: ${#APPLE_PROVISIONING_PROFILE}"
+          if [ -z "$APPLE_PROVISIONING_PROFILE" ]; then
             echo "Secret is empty!"
           else
-            echo "Secret is set (length: ${#PROV_SECRET})"
+            echo "Secret is set (length: ${#APPLE_PROVISIONING_PROFILE})"
           fi
 
       - name: Debug Decoded Profile
@@ -96,13 +94,11 @@ jobs:
 
       # Install provisioning profile
       - name: Install provisioning profile
-        env:
-          PROVISION_PROFILE: ${{ env.APPLE_PROVISIONING_PROFILE }}
         run: |
           # ---- DEBUG: Check secret content ----
-          echo "PROVISION_PROFILE length: ${#PROVISION_PROFILE}"
-          echo "First 50 chars: ${PROVISION_PROFILE:0:50}"
-          if [ ${#PROVISION_PROFILE} -eq 0 ]; then
+          echo "PROVISION_PROFILE length: ${#APPLE_PROVISIONING_PROFILE}"
+          echo "First 50 chars: ${APPLE_PROVISIONING_PROFILE:0:50}"
+          if [ ${#APPLE_PROVISIONING_PROFILE} -eq 0 ]; then
             echo "::error::APPLE_PROVISIONING_PROFILE is completely empty! Check that japchae.mobileprovision.b64.txt exists and contains valid base64 content"
             exit 1
           fi
@@ -111,7 +107,7 @@ jobs:
           PROFILE_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
           # Ensure the Provisioning Profiles directory exists
           mkdir -p "$PROFILE_DIR"
-          echo "$PROVISION_PROFILE" | base64 --decode > "$PROFILE_DIR/profile.mobileprovision"
+          echo "$APPLE_PROVISIONING_PROFILE" | base64 --decode > "$PROFILE_DIR/profile.mobileprovision"
           # ---- DEBUG: verify decode ----
           PROFILE_PATH="$PROFILE_DIR/profile.mobileprovision"
           BYTES=$(stat -f%z "$PROFILE_PATH")

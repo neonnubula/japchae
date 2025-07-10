@@ -15,6 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Load provisioning profile from repo
+        shell: bash
+        run: echo "APPLE_PROVISIONING_PROFILE=$(cat japchae.mobileprovision.b64.txt)" >> $GITHUB_ENV
+
       # Fail fast if any required secret is missing or empty
       - name: Verify required secrets
         shell: bash
@@ -30,14 +34,13 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_CERTIFICATE_P12: ${{ secrets.APPLE_CERTIFICATE_P12 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
-          APPLE_PROVISIONING_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
           ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
 
       - name: Debug Secret Availability
         env:
-          PROV_SECRET: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+          PROV_SECRET: ${{ env.APPLE_PROVISIONING_PROFILE }}
         run: |
           echo "Raw secret length: ${#PROV_SECRET}"
           if [ -z "$PROV_SECRET" ]; then
@@ -48,7 +51,7 @@ jobs:
 
       - name: Debug Decoded Profile
         run: |
-          echo "${{ secrets.APPLE_PROVISIONING_PROFILE }}" | base64 -d > profile.mobileprovision
+          echo "$APPLE_PROVISIONING_PROFILE" | base64 -d > profile.mobileprovision
           if [ -s profile.mobileprovision ]; then
             echo "Decoded file size: $(stat -f%z profile.mobileprovision)"
           else
@@ -94,7 +97,7 @@ jobs:
       # Install provisioning profile
       - name: Install provisioning profile
         env:
-          PROVISION_PROFILE: ${{ secrets.APPLE_PROVISIONING_PROFILE }}
+          PROVISION_PROFILE: ${{ env.APPLE_PROVISIONING_PROFILE }}
         run: |
           # ---- DEBUG: Check secret content ----
           echo "PROVISION_PROFILE length: ${#PROVISION_PROFILE}"

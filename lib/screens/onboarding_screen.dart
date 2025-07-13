@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:most_important_thing/services/storage_service.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -11,47 +13,57 @@ class OnboardingScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Welcome to Most Important Thing',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 8),
               const Text(
-                'We often try to achieve too much in a day but not enough in a year. Science shows overcommitting leads to burnout and diluted focus.',
+                '🎯',
+                style: TextStyle(fontSize: 48),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 28),
+              _buildSection(
+                context,
+                title: 'The Problem',
+                icon: '😵',
+                body: 'We over-stuff our days, stall momentum, and end up achieving less over the year.'
+              ),
+              const SizedBox(height: 20),
+              _buildSection(
+                context,
+                title: 'The Solution',
+                icon: '🚀',
+                body: 'Commit to ONE Most Important Thing you can realistically finish today. Small wins ➜ daily momentum ➜ big results.'
+              ),
+              const SizedBox(height: 20),
+              _buildSection(
+                context,
+                title: 'Your Edge',
+                icon: '⚡',
+                body: 'Smart reminders keep you focused. Turn on notifications so you never miss your daily win.'
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                '🔥 Ready to build momentum?',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'The power of momentum: By ticking off one Most Important Thing (MIT) each day—something achievable that advances your goals—you build habits, reduce overwhelm, and create long-term progress.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'How this app works: Set your daily MIT, track completions for streaks, get smart notifications to stay on track, and watch your year transform!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 32),
-              const Text(
-                'Notifications are key—they remind you daily to focus on what matters. Enable them to supercharge your momentum!',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
+                  Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
                   // TODO: Request notification permissions here
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 },
-                child: const Text('Get Started'),
+                child: const Text('🚀 Get Started'),
               ),
             ],
           ),
@@ -59,4 +71,30 @@ class OnboardingScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildSection(BuildContext context, {required String title, required String icon, required String body}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Row(
+        children: [
+          Text(
+            icon,
+            style: const TextStyle(fontSize: 24),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      Text(
+        body,
+        style: Theme.of(context).textTheme.bodyMedium,
+      ),
+    ],
+  );
 } 

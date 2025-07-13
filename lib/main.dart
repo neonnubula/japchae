@@ -102,8 +102,11 @@ class MostImportantThingApp extends StatelessWidget {
           surfaceTintColor: Colors.transparent,
         ),
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: Colors.white70),
-          bodyMedium: TextStyle(color: Colors.white60),
+          headlineSmall: const TextStyle(color: Colors.white),
+          titleMedium: const TextStyle(color: Colors.white),
+          bodyLarge: const TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.grey[300]),
+          labelSmall: TextStyle(color: Colors.grey[400]),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(

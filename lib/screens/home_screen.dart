@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   hintText: 'E.g., Ship the new landing page...',
                                   hintStyle: TextStyle(color: Colors.grey[600]),
                                   filled: true,
-                                  fillColor: Colors.white,
+                                  fillColor: Theme.of(context).colorScheme.surfaceVariant,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                     borderSide: BorderSide.none,
@@ -266,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         elevation: 0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -278,8 +278,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const HistoryScreen()),
                 );
               },
-              icon: const Icon(Icons.history, color: Colors.black87),
-              label: const Text('Goal History', style: TextStyle(color: Colors.black87)),
+              icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
+              label: Text('Goal History', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
             ),
             TextButton.icon(
               onPressed: () {
@@ -289,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               icon: const Icon(Icons.local_fire_department, color: Colors.orange),
-              label: const Text('Stats', style: TextStyle(color: Colors.black87)),
+              label: Text('Stats', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
             ),
             TextButton.icon(
               onPressed: () {
@@ -298,8 +298,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => const MenuScreen()),
                 );
               },
-              icon: const Icon(Icons.menu, color: Colors.black87),
-              label: const Text('Menu', style: TextStyle(color: Colors.black87)),
+              icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
+              label: Text('Menu', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
             ),
           ],
         ),
@@ -414,8 +414,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   title,
                   style: TextStyle(
+                    color: Theme.of(context).textTheme.labelSmall?.color,
                     fontSize: 12,
                     letterSpacing: 1.5,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const Spacer(),
@@ -446,7 +448,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Text(
                     text,
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 const Icon(Icons.edit, color: Colors.amber, size: 16),

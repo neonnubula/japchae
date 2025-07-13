@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:most_important_thing/models/goal_model.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
+import 'package:most_important_thing/screens/onboarding_screen.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
@@ -24,11 +25,11 @@ void main() async {
 
     final storageService = StorageService(notificationService);
     await storageService.init();
-
+    final isFirstLaunch = storageService.isFirstLaunch;
     runApp(
       ChangeNotifierProvider(
         create: (context) => storageService,
-        child: const MostImportantThingApp(),
+        child: MostImportantThingApp(initialRoute: isFirstLaunch ? OnboardingScreen() : HomeScreen()),
       ),
     );
   } catch (e) {
@@ -46,7 +47,8 @@ void main() async {
 }
 
 class MostImportantThingApp extends StatelessWidget {
-  const MostImportantThingApp({super.key});
+  final Widget initialRoute;
+  const MostImportantThingApp({super.key, required this.initialRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +78,42 @@ class MostImportantThingApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF0066CC),
           brightness: Brightness.dark,
+          primary: const Color(0xFF4285F4), // Softer blue for accents
+          secondary: const Color(0xFF03DAC6), // Harmonious teal accent
+          surface: Colors.grey[850]!,
+          background: Colors.grey[900]!,
+          error: const Color(0xFFCF6679),
         ),
+        scaffoldBackgroundColor: Colors.grey[900],
+        cardColor: Colors.grey[850],
+        shadowColor: Colors.black.withOpacity(0.3), // Visible shadows in dark mode
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           fillColor: Colors.grey[800],
           border: const OutlineInputBorder(borderSide: BorderSide.none),
+          hintStyle: TextStyle(color: Colors.grey[400]),
         ),
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.grey[900],
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
+          scrolledUnderElevation: 0,
+          surfaceTintColor: Colors.transparent,
+        ),
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white70),
+          bodyMedium: TextStyle(color: Colors.white60),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF4285F4), // Use primary for buttons
+            foregroundColor: Colors.white,
+          ),
         ),
       ),
       themeMode: ThemeMode.system,
-      home: const HomeScreen(),
+      home: initialRoute,
     );
   }
 }

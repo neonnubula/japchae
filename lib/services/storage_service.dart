@@ -38,6 +38,9 @@ class StorageService with ChangeNotifier {
       _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);
       _settingsBox = await Hive.openBox(_settingsBoxName, encryptionCipher: encryptionCipher);
       
+      if (isFirstLaunch) {
+        // Optionally handle here, but main will route
+      }
       _updateCompletedDatesCache();
       _scheduleInitialNotification();
     } catch (e) {
@@ -134,6 +137,7 @@ class StorageService with ChangeNotifier {
 
   bool get dailyNotifications => _settingsBox.get(_dailyNotificationsKey, defaultValue: true) as bool;
   bool get askAboutYesterday => _settingsBox.get(_askAboutYesterdayKey, defaultValue: true) as bool;
+  bool get isFirstLaunch => _settingsBox.get('firstLaunch', defaultValue: true);
 
   TimeOfDay get notificationTime {
     final timeString = _settingsBox.get(_notificationTimeKey, defaultValue: '18:25') as String;
@@ -162,6 +166,10 @@ class StorageService with ChangeNotifier {
       _scheduleNotification();
     }
     notifyListeners();
+  }
+
+  Future<void> setFirstLaunchCompleted() async {
+    await _settingsBox.put('firstLaunch', false);
   }
 
   void _scheduleInitialNotification() {

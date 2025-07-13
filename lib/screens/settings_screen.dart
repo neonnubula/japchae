@@ -119,16 +119,21 @@ class SettingsScreen extends StatelessWidget {
     VoidCallback? onTap,
     bool isThreeLine = false,
   }) {
-    return ListTile(
-      title: Text(title),
-      subtitle: subtitle != null
-          ? Text(subtitle, style: TextStyle(color: Colors.grey[600]))
-          : null,
-      trailing: trailing,
-      onTap: onTap,
-      isThreeLine: isThreeLine,
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        title: Text(title),
+        subtitle: subtitle != null
+            ? Text(subtitle, style: TextStyle(color: Colors.grey[600]))
+            : null,
+        trailing: trailing,
+        onTap: onTap,
+        isThreeLine: isThreeLine,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      ),
     );
   }
 } 

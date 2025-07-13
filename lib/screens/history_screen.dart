@@ -48,11 +48,15 @@ class HistoryScreen extends StatelessWidget {
               child: Text('No history yet.'),
             );
           }
-                      return ListView.builder(
-              itemCount: goals.length,
-              itemBuilder: (context, index) {
-                final goal = goals[index];
-                return Semantics(
+          return ListView.builder(
+            itemCount: goals.length,
+            itemBuilder: (context, index) {
+              final goal = goals[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Semantics(
                   label: 'Goal: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
                   child: ListTile(
                     title: Text(goal.text),
@@ -97,9 +101,10 @@ class HistoryScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                );
-              },
-            );
+                ),
+              );
+            },
+          );
         },
       ),
     );

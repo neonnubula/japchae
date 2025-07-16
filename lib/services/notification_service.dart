@@ -1,7 +1,8 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'dart:io';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -38,8 +39,49 @@ class NotificationService {
     await androidImplementation?.requestNotificationsPermission();
 
     tz.initializeTimeZones();
-    final String localTimezone = await FlutterNativeTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(localTimezone));
+    // Set local timezone based on device timezone offset
+    final DateTime now = DateTime.now();
+    final int offsetHours = now.timeZoneOffset.inHours;
+    
+    // Map common timezone offsets to timezone names
+    String timezoneName = 'UTC';
+    if (offsetHours == 0) {
+      timezoneName = 'UTC';
+    } else if (offsetHours == -5) {
+      timezoneName = 'America/New_York';
+    } else if (offsetHours == -6) {
+      timezoneName = 'America/Chicago';
+    } else if (offsetHours == -7) {
+      timezoneName = 'America/Denver';
+    } else if (offsetHours == -8) {
+      timezoneName = 'America/Los_Angeles';
+    } else if (offsetHours == 1) {
+      timezoneName = 'Europe/London';
+    } else if (offsetHours == 2) {
+      timezoneName = 'Europe/Paris';
+    } else if (offsetHours == 8) {
+      timezoneName = 'Asia/Shanghai';
+    } else if (offsetHours == 9) {
+      timezoneName = 'Asia/Tokyo';
+    } else if (offsetHours == 10) {
+      timezoneName = 'Australia/Sydney';
+    } else if (offsetHours == 11) {
+      timezoneName = 'Australia/Melbourne';
+    } else if (offsetHours == -3) {
+      timezoneName = 'America/Sao_Paulo';
+    } else if (offsetHours == 5) {
+      timezoneName = 'Asia/Kolkata';
+    } else if (offsetHours == 7) {
+      timezoneName = 'Asia/Bangkok';
+    }
+    
+    try {
+      tz.setLocalLocation(tz.getLocation(timezoneName));
+      debugPrint('Set timezone to: $timezoneName (offset: $offsetHours hours)');
+    } catch (e) {
+      debugPrint('Failed to set timezone $timezoneName, using UTC: $e');
+      tz.setLocalLocation(tz.getLocation('UTC'));
+    }
   }
 
   Future<void> scheduleDailyNotification(tz.TZDateTime scheduledTime) async {

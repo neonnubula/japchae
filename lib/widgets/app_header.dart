@@ -61,20 +61,20 @@ class GradientBackground extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: isDarkMode
               ? [
-                  // Dark mode - more visible, elegant gradients
-                  const Color(0xFF1F1F1F).withValues(alpha: 0.95), // Dark base
-                  const Color(0xFF0D2818).withValues(alpha: 0.90), // Dark with green hint  
-                  const Color(0xFF0F1A1E).withValues(alpha: 0.88), // Dark with teal hint
-                  const Color(0xFF2B2B1F).withValues(alpha: 0.92), // Dark with gold hint
+                  // Dark mode - dramatic, visible gradients
+                  const Color(0xFF2D2D2D), // Medium dark base
+                  const Color(0xFF1B3B2B), // Rich dark green  
+                  const Color(0xFF1E3A3A), // Deep teal
+                  const Color(0xFF3B3B1B), // Dark gold
                 ]
               : [
-                  // Light mode - more visible, warm gradients
-                  const Color(0xFFFFF8E1).withValues(alpha: 0.75), // Warm white with gold hint
-                  const Color(0xFFF1F8E9).withValues(alpha: 0.80), // Light with green hint
-                  const Color(0xFFE0F2F1).withValues(alpha: 0.78), // Light with teal hint  
-                  const Color(0xFFFFF3E0).withValues(alpha: 0.76), // Warm peachy white
+                  // Light mode - vibrant, clearly visible gradients
+                  const Color(0xFFFFF9C4), // Bright warm yellow
+                  const Color(0xFFE8F5E8), // Fresh light green
+                  const Color(0xFFB2DFDB), // Clear teal blue  
+                  const Color(0xFFFFE0B2), // Warm peach orange
                 ],
-          stops: const [0.0, 0.3, 0.7, 1.0],
+          stops: const [0.0, 0.3, 0.65, 1.0],
         ),
       ),
       child: child,

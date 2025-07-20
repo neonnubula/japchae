@@ -61,18 +61,18 @@ class GradientBackground extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: isDarkMode
               ? [
-                  // Dark mode - subtle, elegant gradients
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.95), // Very dark with gold hint
-                  const Color(0xFF0F1B0F).withValues(alpha: 0.98), // Dark with green hint  
-                  const Color(0xFF0A1A1A).withValues(alpha: 0.96), // Dark with teal hint
-                  const Color(0xFF1A1A1A).withValues(alpha: 0.95), // Back to dark
+                  // Dark mode - more visible, elegant gradients
+                  const Color(0xFF1F1F1F).withValues(alpha: 0.95), // Dark base
+                  const Color(0xFF0D2818).withValues(alpha: 0.90), // Dark with green hint  
+                  const Color(0xFF0F1A1E).withValues(alpha: 0.88), // Dark with teal hint
+                  const Color(0xFF2B2B1F).withValues(alpha: 0.92), // Dark with gold hint
                 ]
               : [
-                  // Light mode - warm, elegant gradients
-                  const Color(0xFFFFFBF0).withValues(alpha: 0.90), // Warm white with gold hint
-                  const Color(0xFFF9FBF7).withValues(alpha: 0.95), // Light with green hint
-                  const Color(0xFFF7FAFA).withValues(alpha: 0.92), // Light with teal hint  
-                  const Color(0xFFFFFBF0).withValues(alpha: 0.90), // Back to warm white
+                  // Light mode - more visible, warm gradients
+                  const Color(0xFFFFF8E1).withValues(alpha: 0.75), // Warm white with gold hint
+                  const Color(0xFFF1F8E9).withValues(alpha: 0.80), // Light with green hint
+                  const Color(0xFFE0F2F1).withValues(alpha: 0.78), // Light with teal hint  
+                  const Color(0xFFFFF3E0).withValues(alpha: 0.76), // Warm peachy white
                 ],
           stops: const [0.0, 0.3, 0.7, 1.0],
         ),

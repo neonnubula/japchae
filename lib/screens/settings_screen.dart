@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -15,7 +16,12 @@ class SettingsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Settings'),
+        title: const AppHeader(
+          fontSize: 20.0,
+          padding: EdgeInsets.zero,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: Consumer<StorageService>(
         builder: (context, storageService, child) {

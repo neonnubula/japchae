@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/onboarding_screen.dart';
 import 'package:most_important_thing/screens/settings_screen.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class MenuScreen extends StatelessWidget {
   const MenuScreen({super.key});
@@ -9,7 +10,13 @@ class MenuScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menu'),
+        title: const AppHeader(
+          fontSize: 20.0,
+          padding: EdgeInsets.zero,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: ListView(
         children: [

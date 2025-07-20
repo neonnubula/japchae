@@ -3,6 +3,7 @@ import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class StreakScreen extends StatelessWidget {
   const StreakScreen({super.key});
@@ -11,7 +12,13 @@ class StreakScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Streak'),
+        title: const AppHeader(
+          fontSize: 20.0,
+          padding: EdgeInsets.zero,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Consumer<StorageService>(
         builder: (context, storage, _) {

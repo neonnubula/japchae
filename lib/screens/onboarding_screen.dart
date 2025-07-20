@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -15,6 +16,12 @@ class OnboardingScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Beautiful app header
+              const AppHeader(
+                fontSize: 28.0,
+                padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
+              ),
+
               Text(
                 'Welcome to Most Important Thing',
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),

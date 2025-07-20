@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -16,7 +17,12 @@ class HistoryScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('History'),
+        title: const AppHeader(
+          fontSize: 20.0,
+          padding: EdgeInsets.zero,
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
         actions: [
           IconButton(
             icon: const Icon(Icons.share),

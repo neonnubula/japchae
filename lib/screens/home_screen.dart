@@ -5,6 +5,7 @@ import 'package:most_important_thing/screens/menu_screen.dart'; // Added import 
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,8 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Most Important Thing'),
+        title: const AppHeader(
+          fontSize: 20.0,
+          padding: EdgeInsets.zero,
+        ),
         elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
         child: Padding(

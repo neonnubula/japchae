@@ -5,6 +5,7 @@ import 'package:most_important_thing/screens/home_screen.dart';
 import 'package:most_important_thing/screens/onboarding_screen.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/widgets/app_header.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -57,44 +58,51 @@ class MostImportantThingApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0066CC),
+          seedColor: const Color(0xFF32CD32), // Using header's lime green as seed
           brightness: Brightness.light,
+          primary: const Color(0xFF20B2AA), // Light sea green from header
+          secondary: const Color(0xFFFFD700), // Golden yellow from header
+          surface: const Color(0xFFFFFBF0), // Warm white surface
         ),
-        scaffoldBackgroundColor: const Color(0xFFF9F7F3),
+        scaffoldBackgroundColor: Colors.transparent, // Let gradient show through
         inputDecorationTheme: const InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Color(0xFFFFFEFA), // Slightly warmer white for inputs
           border: OutlineInputBorder(borderSide: BorderSide.none),
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF9F7F3),
-          foregroundColor: Colors.black,
+          backgroundColor: Colors.transparent, // Transparent to show gradient
+          foregroundColor: Colors.black87,
           elevation: 0,
           centerTitle: true,
+        ),
+        cardTheme: CardThemeData(
+          color: const Color(0xFFFFFEFA).withValues(alpha: 0.8), // Semi-transparent cards
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.1),
         ),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0066CC),
+          seedColor: const Color(0xFF32CD32), // Using header's lime green as seed
           brightness: Brightness.dark,
-          primary: const Color(0xFF4285F4), // Softer blue for accents
-          secondary: const Color(0xFF03DAC6), // Harmonious teal accent
-          surface: Colors.grey[850]!,
-          background: Colors.grey[900]!,
-          error: const Color(0xFFCF6679),
+          primary: const Color(0xFF20B2AA), // Light sea green from header
+          secondary: const Color(0xFFFFD700), // Golden yellow from header
+          surface: const Color(0xFF1E1E1E), // Dark surface
+          onSurface: Colors.white,
         ),
-        scaffoldBackgroundColor: Colors.grey[900],
-        cardColor: Colors.grey[850],
-        shadowColor: Colors.black.withOpacity(0.3), // Visible shadows in dark mode
+        scaffoldBackgroundColor: Colors.transparent, // Let gradient show through
+        cardColor: const Color(0xFF1E1E1E).withValues(alpha: 0.8), // Semi-transparent dark cards
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.grey[800],
+          fillColor: const Color(0xFF2A2A2A).withValues(alpha: 0.8), // Semi-transparent dark inputs
           border: const OutlineInputBorder(borderSide: BorderSide.none),
           hintStyle: TextStyle(color: Colors.grey[400]),
         ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.grey[900],
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent, // Transparent to show gradient
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
@@ -110,13 +118,26 @@ class MostImportantThingApp extends StatelessWidget {
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF4285F4), // Use primary for buttons
+            backgroundColor: const Color(0xFF20B2AA), // Use header sea green for buttons
             foregroundColor: Colors.white,
           ),
         ),
+        cardTheme: CardThemeData(
+          color: const Color(0xFF1E1E1E).withValues(alpha: 0.8), // Semi-transparent cards
+          elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.3),
+        ),
       ),
       themeMode: ThemeMode.system,
-      home: initialRoute,
+      home: Builder(
+        builder: (context) {
+          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+          return GradientBackground(
+            isDarkMode: isDarkMode,
+            child: initialRoute,
+          );
+        },
+      ),
     );
   }
 }

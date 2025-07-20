@@ -10,51 +10,56 @@ class StreakScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const AppHeader(
-          fontSize: 20.0,
-          padding: EdgeInsets.zero,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return GradientBackground(
+      isDarkMode: isDarkMode,
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Let gradient show through
+        appBar: AppBar(
+          title: const AppHeader(
+            fontSize: 20.0,
+            padding: EdgeInsets.zero,
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: 70.0, // Optimized for text-only header
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 70.0, // Optimized for text-only header
-      ),
-      body: Consumer<StorageService>(
-        builder: (context, storage, _) {
-          final streak = storage.getCurrentStreak();
-          final allGoals = storage.getAllGoals();
-          final completedGoals = allGoals.where((g) => g.isCompleted).toList();
-          
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                // Main streak display
-                Semantics(
-                  label: 'Current streak: $streak days',
-                  child: Container(
-                    padding: const EdgeInsets.all(40),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.local_fire_department,
-                          size: 60,
-                          color: Colors.orange,
-                        ),
-                        const SizedBox(height: 16),
+        body: Consumer<StorageService>(
+          builder: (context, storage, _) {
+            final streak = storage.getCurrentStreak();
+            final allGoals = storage.getAllGoals();
+            final completedGoals = allGoals.where((g) => g.isCompleted).toList();
+            
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Main streak display
+                  Semantics(
+                    label: 'Current streak: $streak days',
+                    child: Container(
+                      padding: const EdgeInsets.all(40),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          const Icon(
+                            Icons.local_fire_department,
+                            size: 60,
+                            color: Colors.orange,
+                          ),
+                          const SizedBox(height: 16),
                 Text(
                   '$streak',
                   style: const TextStyle(fontSize: 72, fontWeight: FontWeight.bold),
@@ -161,8 +166,8 @@ class StreakScreen extends StatelessWidget {
                 ],
               ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

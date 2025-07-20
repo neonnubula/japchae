@@ -8,38 +8,44 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const AppHeader(
-          fontSize: 20.0,
-          padding: EdgeInsets.zero,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return GradientBackground(
+      isDarkMode: isDarkMode,
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Let gradient show through
+        appBar: AppBar(
+          title: const AppHeader(
+            fontSize: 20.0,
+            padding: EdgeInsets.zero,
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: 70.0, // Optimized for text-only header
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 70.0, // Optimized for text-only header
-      ),
-      body: ListView(
-        children: [
-          ListTile(
-            title: const Text('Onboarding'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          ),
-        ],
+        body: ListView(
+          children: [
+            ListTile(
+              title: const Text('Onboarding'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+                );
+              },
+            ),
+            ListTile(
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

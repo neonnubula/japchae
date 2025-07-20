@@ -9,70 +9,76 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Beautiful app header
-              const AppHeader(
-                fontSize: 28.0,
-                padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
-              ),
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-              Text(
-                'Welcome to Most Important Thing',
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                '🎯',
-                style: TextStyle(fontSize: 48),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 28),
-              _buildSection(
-                context,
-                title: 'The Problem',
-                icon: '😵',
-                body: 'We over-stuff our days, stall momentum, and end up achieving less over the year.'
-              ),
-              const SizedBox(height: 20),
-              _buildSection(
-                context,
-                title: 'The Solution',
-                icon: '🚀',
-                body: 'Commit to ONE Most Important Thing you can realistically finish today. Small wins ➜ daily momentum ➜ big results.'
-              ),
-              const SizedBox(height: 20),
-              _buildSection(
-                context,
-                title: 'Your Edge',
-                icon: '⚡',
-                body: 'Smart reminders keep you focused. Turn on notifications so you never miss your daily win.'
-              ),
-              const SizedBox(height: 28),
-              const Text(
-                '🔥 Ready to build momentum?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
-                  // TODO: Request notification permissions here
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                },
-                child: const Text('🚀 Get Started'),
-              ),
-            ],
+    return GradientBackground(
+      isDarkMode: isDarkMode,
+      child: Scaffold(
+        backgroundColor: Colors.transparent, // Let gradient show through
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Beautiful app header
+                const AppHeader(
+                  fontSize: 28.0,
+                  padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
+                ),
+
+                Text(
+                  'Welcome to Most Important Thing',
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  '🎯',
+                  style: TextStyle(fontSize: 48),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 28),
+                _buildSection(
+                  context,
+                  title: 'The Problem',
+                  icon: '😵',
+                  body: 'We over-stuff our days, stall momentum, and end up achieving less over the year.'
+                ),
+                const SizedBox(height: 20),
+                _buildSection(
+                  context,
+                  title: 'The Solution',
+                  icon: '🚀',
+                  body: 'Commit to ONE Most Important Thing you can realistically finish today. Small wins ➜ daily momentum ➜ big results.'
+                ),
+                const SizedBox(height: 20),
+                _buildSection(
+                  context,
+                  title: 'Your Edge',
+                  icon: '⚡',
+                  body: 'Smart reminders keep you focused. Turn on notifications so you never miss your daily win.'
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  '🔥 Ready to build momentum?',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
+                    // TODO: Request notification permissions here
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                    );
+                  },
+                  child: const Text('🚀 Get Started'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

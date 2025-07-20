@@ -39,4 +39,45 @@ class AppHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+// Elegant gradient background widget
+class GradientBackground extends StatelessWidget {
+  final Widget child;
+  final bool isDarkMode;
+
+  const GradientBackground({
+    super.key,
+    required this.child,
+    required this.isDarkMode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isDarkMode
+              ? [
+                  // Dark mode - subtle, elegant gradients
+                  const Color(0xFF1A1A1A).withValues(alpha: 0.95), // Very dark with gold hint
+                  const Color(0xFF0F1B0F).withValues(alpha: 0.98), // Dark with green hint  
+                  const Color(0xFF0A1A1A).withValues(alpha: 0.96), // Dark with teal hint
+                  const Color(0xFF1A1A1A).withValues(alpha: 0.95), // Back to dark
+                ]
+              : [
+                  // Light mode - warm, elegant gradients
+                  const Color(0xFFFFFBF0).withValues(alpha: 0.90), // Warm white with gold hint
+                  const Color(0xFFF9FBF7).withValues(alpha: 0.95), // Light with green hint
+                  const Color(0xFFF7FAFA).withValues(alpha: 0.92), // Light with teal hint  
+                  const Color(0xFFFFFBF0).withValues(alpha: 0.90), // Back to warm white
+                ],
+          stops: const [0.0, 0.3, 0.7, 1.0],
+        ),
+      ),
+      child: child,
+    );
+  }
 } 

@@ -63,22 +63,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 24),
                   // Streak counter
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.local_fire_department, color: Colors.orange),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${storageService.getCurrentStreak()} day streak',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
+                  ElevatedGradientCard(
+                    isDarkMode: isDarkMode,
+                    useGradient: true,
+                    elevation: 10.0,
+                    borderRadius: 18.0,
+                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.local_fire_department, color: Colors.orange, size: 24),
+                        const SizedBox(width: 12),
+                        Text(
+                          '${storageService.getCurrentStreak()} day streak',
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -87,84 +87,85 @@ class _HomeScreenState extends State<HomeScreen> {
                       final todayGoal = storageService.getTodayGoal();
                       if (todayGoal == null) {
                         // Show input to set today's goal
-                        return Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'What is the most important thing to achieve today to advance your goals?',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
+                        return ElevatedGradientCard(
+                          isDarkMode: isDarkMode,
+                          useGradient: true,
+                          elevation: 12.0,
+                          borderRadius: 20.0,
+                          padding: const EdgeInsets.all(24),
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'What is the most important thing to achieve today to advance your goals?',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              TextField(
+                                controller: _dailyGoalController,
+                                decoration: InputDecoration(
+                                  hintText: 'E.g., Ship the new landing page...',
+                                  hintStyle: TextStyle(color: Colors.grey[600]),
+                                  filled: true,
+                                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                    borderSide: BorderSide.none,
                                   ),
                                 ),
-                                const SizedBox(height: 24),
-                                TextField(
-                                  controller: _dailyGoalController,
-                                  decoration: InputDecoration(
-                                    hintText: 'E.g., Ship the new landing page...',
-                                    hintStyle: TextStyle(color: Colors.grey[600]),
-                                    filled: true,
-                                    fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
-                                  maxLines: 3,
-                                ),
-                                const SizedBox(height: 24),
-                                Semantics(
-                                  label: 'Set today\'s most important goal',
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        final text = _dailyGoalController.text.trim();
-                                        if (text.isEmpty) {
+                                maxLines: 3,
+                              ),
+                              const SizedBox(height: 24),
+                              Semantics(
+                                label: 'Set today\'s most important goal',
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      final text = _dailyGoalController.text.trim();
+                                      if (text.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Please enter a goal')),
+                                        );
+                                        return;
+                                      }
+                                      
+                                      try {
+                                        await storageService.setTodayGoal(text);
+                                        _dailyGoalController.clear();
+                                        if (mounted) {
                                           ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Please enter a goal')),
+                                            const SnackBar(content: Text('Goal for today set!')),
                                           );
-                                          return;
                                         }
-                                        
-                                        try {
-                                          await storageService.setTodayGoal(text);
-                                          _dailyGoalController.clear();
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('Goal for today set!')),
-                                            );
-                                          }
-                                        } catch (e) {
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(content: Text('Error: ${e.toString()}')),
-                                            );
-                                          }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Error: ${e.toString()}')),
+                                          );
                                         }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF004C9F),
-                                        foregroundColor: Colors.white,
-                                        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(14),
-                                        ),
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF004C9F),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
                                       ),
-                                      child: const Text(
-                                        "Set Today's Goal",
-                                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                                      ),
+                                    ),
+                                    child: const Text(
+                                      "Set Today's Goal",
+                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       } else {
@@ -181,89 +182,85 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            todayGoal.text,
-                                            style: const TextStyle(fontSize: 18),
-                                          ),
-                                        ),
-                                        if (todayGoal.isCompleted)
-                                          IconButton(
-                                            icon: const Icon(Icons.share, color: Colors.black54),
-                                            onPressed: () {
-                                              final streak = storageService.getCurrentStreak();
-                                              Share.share('I\'ve got a $streak day streak by completing today\'s goal: "${todayGoal.text}" on the Most Important Thing app!');
-                                            },
-                                          )
-                                        else
-                                          IconButton(
-                                            icon: const Icon(Icons.edit, color: Colors.amber),
-                                            onPressed: () {
-                                              _showEditGoalDialog(
-                                                context,
-                                                "Today's Goal",
-                                                todayGoal.text,
-                                                (newValue) {
-                                                  storageService.setTodayGoal(newValue);
-                                                },
-                                              );
-                                            },
-                                          ),
-                                      ],
-                                    ),
-                                    if (!todayGoal.isCompleted)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 12),
-                                        child: SizedBox(
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(0xFF006E1C), // green
-                                              foregroundColor: Colors.white,
-                                              padding: const EdgeInsets.symmetric(vertical: 14),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(12),
-                                              ),
-                                            ),
-                                            onPressed: () async {
-                                              final confirmed = await _showConfirmationDialog(
-                                                context,
-                                                'Complete Goal',
-                                                'Mark today\'s goal as completed?',
-                                              );
-                                              if (confirmed == true) {
-                                                try {
-                                                  todayGoal.isCompleted = true;
-                                                  await storageService.updateGoal(todayGoal);
-                                                  if (mounted) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      const SnackBar(content: Text('Goal completed! 🎉')),
-                                                    );
-                                                  }
-                                                } catch (e) {
-                                                  if (mounted) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Error: ${e.toString()}')),
-                                                    );
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            child: const Text('Mark as Completed'),
+                            ElevatedGradientCard(
+                              isDarkMode: isDarkMode,
+                              useGradient: true,
+                              elevation: 12.0,
+                              borderRadius: 20.0,
+                              padding: const EdgeInsets.all(24),
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          todayGoal.text,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            decoration: todayGoal.isCompleted
+                                                ? TextDecoration.lineThrough
+                                                : TextDecoration.none,
                                           ),
                                         ),
                                       ),
-                                  ],
-                                ),
+                                      IconButton(
+                                        icon: const Icon(Icons.edit, size: 20),
+                                        onPressed: () => _showEditGoalDialog(
+                                          context,
+                                          "Today's Goal",
+                                          todayGoal.text,
+                                          (newValue) {
+                                            storageService.setTodayGoal(newValue);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (!todayGoal.isCompleted)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 12),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(0xFF006E1C), // green
+                                            foregroundColor: Colors.white,
+                                            padding: const EdgeInsets.symmetric(vertical: 14),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            final confirmed = await _showConfirmationDialog(
+                                              context,
+                                              'Complete Goal',
+                                              'Mark today\'s goal as completed?',
+                                            );
+                                            if (confirmed == true) {
+                                              try {
+                                                todayGoal.isCompleted = true;
+                                                await storageService.updateGoal(todayGoal);
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(content: Text('Goal completed! 🎉')),
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Error: ${e.toString()}')),
+                                                  );
+                                                }
+                                              }
+                                            }
+                                          },
+                                          child: const Text('Mark as Completed'),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],
@@ -414,63 +411,67 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGoalCard(String title, String text, {String? infoDescription}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  title,
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
+    return ElevatedGradientCard(
+      isDarkMode: isDarkMode,
+      useGradient: true,
+      elevation: 12.0,
+      borderRadius: 20.0,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.labelSmall?.color,
+                  fontSize: 12,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              if (infoDescription != null)
+                IconButton(
+                  icon: const Icon(Icons.info_outline, size: 16),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(title),
+                        content: Text(infoDescription),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  text,
                   style: TextStyle(
-                    color: Theme.of(context).textTheme.labelSmall?.color,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                    fontSize: 16,
                   ),
                 ),
-                const Spacer(),
-                if (infoDescription != null)
-                  IconButton(
-                    icon: const Icon(Icons.info_outline, size: 16),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(title),
-                          content: Text(infoDescription),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Close'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    text,
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const Icon(Icons.edit, color: Colors.amber, size: 16),
-              ],
-            )
-          ],
-        ),
+              ),
+              const Icon(Icons.edit, color: Colors.amber, size: 16),
+            ],
+          )
+        ],
       ),
     );
   }

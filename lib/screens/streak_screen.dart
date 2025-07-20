@@ -39,19 +39,13 @@ class StreakScreen extends StatelessWidget {
                   // Main streak display
                   Semantics(
                     label: 'Current streak: $streak days',
-                    child: Container(
+                    child: ElevatedGradientCard(
+                      isDarkMode: isDarkMode,
+                      useGradient: true,
+                      elevation: 15.0,
+                      borderRadius: 24.0,
                       padding: const EdgeInsets.all(40),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
                       child: Column(
                         children: [
                           const Icon(
@@ -88,59 +82,61 @@ class StreakScreen extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                const Icon(Icons.flag, color: Colors.blue, size: 30),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '${allGoals.length}',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue,
-                                  ),
+                        child: ElevatedGradientCard(
+                          isDarkMode: isDarkMode,
+                          useGradient: true,
+                          elevation: 12.0,
+                          borderRadius: 20.0,
+                          padding: const EdgeInsets.all(24),
+                          margin: const EdgeInsets.only(right: 8),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.flag, color: Colors.blue, size: 30),
+                              const SizedBox(height: 8),
+                              Text(
+                                '${allGoals.length}',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
                                 ),
-                                const Text(
-                                  'Total Goals',
-                                  style: TextStyle(fontSize: 14),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Text(
+                                'Total Goals',
+                                style: TextStyle(fontSize: 14),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                const Icon(Icons.check_circle, color: Colors.green, size: 30),
-                                const SizedBox(height: 8),
-                                Text(
-                                  '${completedGoals.length}',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green,
-                                  ),
+                        child: ElevatedGradientCard(
+                          isDarkMode: isDarkMode,
+                          useGradient: true,
+                          elevation: 12.0,
+                          borderRadius: 20.0,
+                          padding: const EdgeInsets.all(24),
+                          margin: const EdgeInsets.only(left: 8),
+                          child: Column(
+                            children: [
+                              const Icon(Icons.check_circle, color: Colors.green, size: 30),
+                              const SizedBox(height: 8),
+                              Text(
+                                '${completedGoals.length}',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
                                 ),
-                                const Text(
-                                  'Completed',
-                                  style: TextStyle(fontSize: 14),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Text(
+                                'Completed',
+                                style: TextStyle(fontSize: 14),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -154,13 +150,18 @@ class StreakScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 16),
-                    ...completedGoals.take(5).map((goal) => Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      elevation: 2,
+                    ...completedGoals.take(5).map((goal) => ElevatedGradientCard(
+                      isDarkMode: isDarkMode,
+                      useGradient: false,
+                      elevation: 8.0,
+                      borderRadius: 16.0,
+                      padding: EdgeInsets.zero,
+                      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                       child: ListTile(
                         leading: const Icon(Icons.check_circle, color: Colors.green),
                         title: Text(goal.text),
                         subtitle: Text(DateFormat.MMMd().format(goal.date)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       ),
                     )),
                   ],

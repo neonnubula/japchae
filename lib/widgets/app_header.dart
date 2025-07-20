@@ -41,6 +41,86 @@ class AppHeader extends StatelessWidget {
   }
 }
 
+// Premium elevated card with optional gradient
+class ElevatedGradientCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final bool useGradient;
+  final double elevation;
+  final double borderRadius;
+  final bool isDarkMode;
+
+  const ElevatedGradientCard({
+    super.key,
+    required this.child,
+    required this.isDarkMode,
+    this.padding = const EdgeInsets.all(16.0),
+    this.margin = const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    this.useGradient = false,
+    this.elevation = 8.0,
+    this.borderRadius = 16.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: margin,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        gradient: useGradient
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDarkMode
+                    ? [
+                        const Color(0xFF3A3A3A), // Lighter dark for cards
+                        const Color(0xFF2A4A3A), // Dark green tint
+                        const Color(0xFF2E4A4A), // Dark teal tint
+                        const Color(0xFF4A4A2A), // Dark gold tint
+                      ]
+                    : [
+                        const Color(0xFFFFFCF0), // Warm cream
+                        const Color(0xFFF8FCF8), // Light green tint
+                        const Color(0xFFF0FFFE), // Light teal tint
+                        const Color(0xFFFFFAF0), // Warm peachy white
+                      ],
+                stops: const [0.0, 0.3, 0.65, 1.0],
+              )
+            : null,
+        color: useGradient ? null : Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: isDarkMode
+                ? Colors.black.withValues(alpha: 0.4)
+                : Colors.black.withValues(alpha: 0.15),
+            blurRadius: elevation * 2,
+            offset: Offset(0, elevation / 2),
+            spreadRadius: 1,
+          ),
+          // Add a subtle inner highlight for more premium feel
+          BoxShadow(
+            color: isDarkMode
+                ? Colors.white.withValues(alpha: 0.05)
+                : Colors.white.withValues(alpha: 0.8),
+            blurRadius: 2,
+            offset: const Offset(0, -1),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: Padding(
+          padding: padding ?? EdgeInsets.zero,
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 // Elegant gradient background widget
 class GradientBackground extends StatelessWidget {
   final Widget child;

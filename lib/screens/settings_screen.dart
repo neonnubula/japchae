@@ -33,8 +33,9 @@ class SettingsScreen extends StatelessWidget {
           builder: (context, storageService, child) {
             return ListView(
               children: [
-                _buildSettingsTile(
-                  title: 'Enable Daily Notifications',
+                              _buildSettingsTile(
+                context,
+                title: 'Enable Daily Notifications',
                   trailing: Switch(
                     value: storageService.dailyNotifications,
                     onChanged: (value) {
@@ -44,14 +45,16 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ),
                 if (storageService.dailyNotifications)
-                  _buildSettingsTile(
-                    title: 'Notification Time',
+                                  _buildSettingsTile(
+                  context,
+                  title: 'Notification Time',
                     subtitle: storageService.notificationTime.format(context),
                     onTap: () => _pickTime(context, storageService),
                   ),
                 const Divider(color: Colors.grey),
-                _buildSettingsTile(
-                  title: 'Ask about yesterday\'s goal',
+                              _buildSettingsTile(
+                context,
+                title: 'Ask about yesterday\'s goal',
                   subtitle:
                       'At the start of each day, prompt to mark the previous day\'s goal as complete.',
                   trailing: Switch(
@@ -65,6 +68,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const Divider(color: Colors.grey),
                 _buildSettingsTile(
+                  context,
                   title: 'Export Data',
                   subtitle: 'Share your goals history and settings',
                   trailing: const Icon(Icons.share),
@@ -85,6 +89,7 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
                 _buildSettingsTile(
+                  context,
                   title: 'App Info',
                   subtitle: 'Version 1.0.1 - Focus on what matters most',
                   trailing: const Icon(Icons.info),
@@ -125,17 +130,23 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
-  Widget _buildSettingsTile({
+  Widget _buildSettingsTile(
+    BuildContext context, {
     required String title,
     String? subtitle,
     Widget? trailing,
     VoidCallback? onTap,
     bool isThreeLine = false,
   }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
+    return ElevatedGradientCard(
+      isDarkMode: isDarkMode,
+      useGradient: true,
+      elevation: 10.0,
+      borderRadius: 18.0,
+      padding: EdgeInsets.zero,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: ListTile(
         title: Text(title),
         subtitle: subtitle != null
@@ -144,8 +155,10 @@ class SettingsScreen extends StatelessWidget {
         trailing: trailing,
         onTap: onTap,
         isThreeLine: isThreeLine,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0),
+        ),
       ),
     );
   }

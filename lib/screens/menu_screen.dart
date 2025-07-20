@@ -24,25 +24,48 @@ class MenuScreen extends StatelessWidget {
           elevation: 0,
           toolbarHeight: 70.0, // Optimized for text-only header
         ),
-        body: ListView(
+        body: Column(
           children: [
-            ListTile(
-              title: const Text('Onboarding'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OnboardingScreen()),
-                );
-              },
+            const SizedBox(height: 20),
+            ElevatedGradientCard(
+              isDarkMode: isDarkMode,
+              useGradient: true,
+              elevation: 10.0,
+              borderRadius: 18.0,
+              padding: EdgeInsets.zero,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                leading: const Icon(Icons.ondemand_video, size: 28),
+                title: const Text('Onboarding', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const OnboardingScreen()),
+                  );
+                },
+              ),
             ),
-            ListTile(
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
-                );
-              },
+            ElevatedGradientCard(
+              isDarkMode: isDarkMode,
+              useGradient: true,
+              elevation: 10.0,
+              borderRadius: 18.0,
+              padding: EdgeInsets.zero,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: ListTile(
+                leading: const Icon(Icons.settings, size: 28),
+                title: const Text('Settings', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  );
+                },
+              ),
             ),
           ],
         ),

@@ -64,54 +64,46 @@ class HistoryScreen extends StatelessWidget {
               itemCount: goals.length,
               itemBuilder: (context, index) {
                 final goal = goals[index];
-                return Card(
+                final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+                
+                return ElevatedGradientCard(
+                  isDarkMode: isDarkMode,
+                  useGradient: false,
+                  elevation: 8.0,
+                  borderRadius: 16.0,
+                  padding: EdgeInsets.zero,
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: Semantics(
                     label: 'Goal: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
                     child: ListTile(
-                      title: Text(goal.text),
-                      subtitle: Text(
-                        DateFormat.yMMMd().format(goal.date),
-                        style: TextStyle(color: Colors.grey[600]),
+                      leading: Icon(
+                        goal.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                        color: goal.isCompleted ? Colors.green : Colors.grey,
                       ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Semantics(
-                            label: goal.isCompleted ? 'Completed goal, tap to mark incomplete' : 'Incomplete goal, tap to mark complete',
-                            child: Checkbox(
-                              value: goal.isCompleted,
-                              onChanged: (bool? value) async {
-                                try {
-                                  goal.isCompleted = value ?? false;
-                                  await storageService.updateGoal(goal);
-                                } catch (e) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: ${e.toString()}')),
-                                    );
-                                  }
-                                }
+                      title: Text(
+                        goal.text,
+                        style: TextStyle(
+                          decoration: goal.isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      ),
+                      subtitle: Text(DateFormat.yMMMd().format(goal.date)),
+                      trailing: goal.isCompleted
+                          ? IconButton(
+                              icon: const Icon(Icons.share),
+                              onPressed: () {
+                                Share.share('I completed my goal: "${goal.text}" on ${DateFormat.yMMMd().format(goal.date)} using the Most Important Thing app!');
                               },
-                              activeColor: const Color(0xFF0066CC),
-                              side: const BorderSide(color: Colors.grey),
+                            )
+                          : IconButton(
+                              icon: const Icon(Icons.check),
+                              onPressed: () {
+                                goal.isCompleted = true;
+                                goal.save();
+                              },
                             ),
-                          ),
-                          if (goal.isCompleted)
-                            Semantics(
-                              label: 'Share this completed goal',
-                              child: IconButton(
-                                icon: const Icon(Icons.share, color: Colors.black54),
-                                onPressed: () {
-                                  final streak = storageService.getCurrentStreak();
-                                  Share.share('I completed my goal: "${goal.text}" on ${DateFormat.yMMMd().format(goal.date)} - ${streak > 0 ? 'part of my $streak day streak!' : ''} Using the Most Important Thing app!');
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
                   ),
                 );

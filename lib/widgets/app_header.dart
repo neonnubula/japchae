@@ -28,10 +28,11 @@ class AppHeader extends StatelessWidget {
         child: Text(
           'Most Important Thing',
           style: TextStyle(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 0.5,
+            fontSize: fontSize * 1.2, // 20% larger for more impact
+            fontWeight: FontWeight.w900, // Heavier weight for prominence
+            letterSpacing: 1.0, // Increased letter spacing for elegance
             color: Colors.white, // This will be masked by the gradient
+            height: 1.1, // Slightly tighter line height
           ),
           textAlign: TextAlign.center,
         ),

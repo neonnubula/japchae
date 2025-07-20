@@ -22,6 +22,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        toolbarHeight: 70.0, // Optimized for text-only header
       ),
       body: Consumer<StorageService>(
         builder: (context, storageService, child) {

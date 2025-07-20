@@ -17,6 +17,7 @@ class MenuScreen extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        toolbarHeight: 70.0, // Optimized for text-only header
       ),
       body: ListView(
         children: [

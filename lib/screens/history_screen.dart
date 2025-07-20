@@ -23,6 +23,7 @@ class HistoryScreen extends StatelessWidget {
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
+        toolbarHeight: 70.0, // Optimized for text-only header
         actions: [
           IconButton(
             icon: const Icon(Icons.share),

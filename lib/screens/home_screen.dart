@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/history_screen.dart';
 import 'package:most_important_thing/screens/streak_screen.dart';
-import 'package:most_important_thing/screens/menu_screen.dart'; // Added import for MenuScreen
+import 'package:most_important_thing/screens/settings_screen.dart';
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/services/gamification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,6 +16,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _dailyGoalController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Set up badge earned celebration callback
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final gamificationService = Provider.of<GamificationService>(context, listen: false);
+      gamificationService.onBadgeEarned = _showBadgeEarnedCelebration;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 'What is the most important thing to achieve today to advance your goals?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -177,8 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               "Today's Focus",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             const SizedBox(height: 24),
@@ -240,8 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             );
                                             if (confirmed == true) {
                                               try {
-                                                todayGoal.isCompleted = true;
-                                                await storageService.updateGoal(todayGoal);
+                                                await storageService.completeGoal(todayGoal);
                                                 if (mounted) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
                                                     const SnackBar(content: Text('Goal completed! 🎉')),
@@ -303,11 +312,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MenuScreen()),
+                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
                   );
                 },
-                icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
-                label: Text('Menu', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
+                icon: Icon(Icons.settings, color: Theme.of(context).iconTheme.color),
+                label: Text('Settings', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
               ),
             ],
           ),
@@ -472,6 +481,82 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           )
         ],
+      ),
+    );
+  }
+
+  void _showBadgeEarnedCelebration(String badgeName) {
+    if (!mounted) return;
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        content: Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [Colors.amber, Colors.orange],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.emoji_events,
+                  size: 40,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                '🎉 Badge Earned! 🎉',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                badgeName,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0066CC),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0066CC),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Awesome!'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

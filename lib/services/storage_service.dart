@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:most_important_thing/models/goal_model.dart';
+import 'package:most_important_thing/models/badge_model.dart';
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -23,6 +24,7 @@ class StorageService with ChangeNotifier {
   static const String _dailyNotificationsKey = 'dailyNotifications';
   static const String _askAboutYesterdayKey = 'askAboutYesterday';
   static const String _notificationTimeKey = 'notificationTime';
+  static const String _gamificationDataKey = 'gamificationData';
 
   Future<void> init() async {
     try {
@@ -89,6 +91,27 @@ class StorageService with ChangeNotifier {
     } catch (e) {
       debugPrint('Error updating goal: $e');
       throw Exception('Failed to update goal. Please try again.');
+    }
+  }
+
+  // New method specifically for completing goals
+  Future<void> completeGoal(Goal goal) async {
+    try {
+      final wasCompleted = goal.isCompleted;
+      if (!wasCompleted) {
+        goal.isCompleted = true;
+        await goal.save();
+        _updateCompletedDatesCache();
+        _cachedStreak = null; // Invalidate cache
+        
+        // Trigger gamification check for newly completed goal
+        await _checkGamificationProgress();
+        
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error completing goal: $e');
+      throw Exception('Failed to complete goal. Please try again.');
     }
   }
 
@@ -242,6 +265,73 @@ class StorageService with ChangeNotifier {
     } catch (e) {
       debugPrint('Error exporting data: $e');
       throw Exception('Failed to export data');
+    }
+  }
+
+  // --- Gamification ---
+  GamificationData? getGamificationData() {
+    final stored = _settingsBox.get(_gamificationDataKey);
+    if (stored == null) return null;
+    return stored as GamificationData;
+  }
+
+  Future<void> saveGamificationData(GamificationData data) async {
+    await _settingsBox.put(_gamificationDataKey, data);
+    notifyListeners();
+  }
+
+  int getTotalCompletedGoals() {
+    return _goalsBox.values.where((goal) => goal.isCompleted).length;
+  }
+
+  int getMaxStreak() {
+    int maxStreak = 0;
+    int currentStreak = 0;
+    
+    final allGoals = getAllGoals();
+    final completedDates = allGoals
+        .where((goal) => goal.isCompleted)
+        .map((goal) => DateTime(goal.date.year, goal.date.month, goal.date.day))
+        .toSet()
+        .toList()
+      ..sort();
+
+    if (completedDates.isEmpty) return 0;
+
+    DateTime? previousDate;
+    for (final date in completedDates) {
+      if (previousDate == null || date.difference(previousDate).inDays == 1) {
+        currentStreak++;
+        maxStreak = maxStreak > currentStreak ? maxStreak : currentStreak;
+      } else {
+        currentStreak = 1;
+      }
+      previousDate = date;
+    }
+
+    return maxStreak;
+  }
+
+  // Callback for gamification progress check
+  Function(int currentStreak, int maxStreak, int totalCompletedGoals)? _gamificationCallback;
+
+  void setGamificationCallback(Function(int currentStreak, int maxStreak, int totalCompletedGoals) callback) {
+    _gamificationCallback = callback;
+  }
+
+  Future<void> _checkGamificationProgress() async {
+    if (_gamificationCallback != null) {
+      final currentStreak = getCurrentStreak();
+      final maxStreak = getMaxStreak();
+      final totalCompleted = getTotalCompletedGoals();
+      print('DEBUG: _checkGamificationProgress called');
+      print('DEBUG: Current streak: $currentStreak');
+      print('DEBUG: Max streak: $maxStreak');
+      print('DEBUG: Total completed: $totalCompleted');
+      print('DEBUG: Triggering gamification callback - Streak: $currentStreak, Max: $maxStreak, Total: $totalCompleted');
+      _gamificationCallback!(currentStreak, maxStreak, totalCompleted);
+    } else {
+      print('DEBUG: Gamification callback is null!');
     }
   }
 

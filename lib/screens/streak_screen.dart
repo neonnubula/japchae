@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/screens/badges_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 
-class StreakScreen extends StatelessWidget {
+class StreakScreen extends StatefulWidget {
   const StreakScreen({super.key});
+
+  @override
+  State<StreakScreen> createState() => _StreakScreenState();
+}
+
+class _StreakScreenState extends State<StreakScreen> {
+  bool _showingStats = true;
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +34,105 @@ class StreakScreen extends StatelessWidget {
           elevation: 0,
           toolbarHeight: 70.0, // Optimized for text-only header
         ),
-        body: Consumer<StorageService>(
-          builder: (context, storage, _) {
-            final streak = storage.getCurrentStreak();
-            final allGoals = storage.getAllGoals();
-            final completedGoals = allGoals.where((g) => g.isCompleted).toList();
+        body: Column(
+          children: [
+            // Toggle between Stats and Badges
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _showingStats = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: _showingStats ? const Color(0xFF0066CC) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.analytics,
+                                color: _showingStats ? Colors.white : Theme.of(context).iconTheme.color,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Stats',
+                                style: TextStyle(
+                                  color: _showingStats ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
+                                  fontWeight: _showingStats ? FontWeight.w600 : FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _showingStats = false),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: !_showingStats ? const Color(0xFF0066CC) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.emoji_events,
+                                color: !_showingStats ? Colors.white : Theme.of(context).iconTheme.color,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Badges',
+                                style: TextStyle(
+                                  color: !_showingStats ? Colors.white : Theme.of(context).textTheme.bodyMedium?.color,
+                                  fontWeight: !_showingStats ? FontWeight.w600 : FontWeight.normal,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
+            // Content
+            Expanded(
+              child: _showingStats ? _buildStatsView() : _buildBadgesView(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsView() {
+    return Consumer<StorageService>(
+      builder: (context, storage, _) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final streak = storage.getCurrentStreak();
+        final allGoals = storage.getAllGoals();
+        final completedGoals = allGoals.where((g) => g.isCompleted).toList();
+        
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
                   // Main streak display
                   Semantics(
                     label: 'Current streak: $streak days',
@@ -165,12 +262,14 @@ class StreakScreen extends StatelessWidget {
                       ),
                     )),
                   ],
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-} 
+              ],
+            ),
+          );
+        },
+      );
+    }
+
+    Widget _buildBadgesView() {
+      return const BadgesScreen();
+    }
+  } 

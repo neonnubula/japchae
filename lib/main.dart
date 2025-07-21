@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:most_important_thing/models/goal_model.dart';
+import 'package:most_important_thing/models/badge_model.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
 import 'package:most_important_thing/screens/onboarding_screen.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/services/gamification_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 import 'package:provider/provider.dart';
 
@@ -23,13 +25,38 @@ void main() async {
 
     await Hive.initFlutter();
     Hive.registerAdapter(GoalAdapter());
+    Hive.registerAdapter(BadgeAdapter());
+    Hive.registerAdapter(BadgeProgressAdapter());
+    Hive.registerAdapter(BadgeCategoryAdapter());
+    Hive.registerAdapter(BadgeRarityAdapter());
+    Hive.registerAdapter(UserLevelAdapter());
+    Hive.registerAdapter(GamificationDataAdapter());
 
     final storageService = StorageService(notificationService);
     await storageService.init();
+    
+    final gamificationService = GamificationService(storageService);
+    
+    // Set up gamification callback
+    storageService.setGamificationCallback((currentStreak, maxStreak, totalCompleted) async {
+      // Award XP for completing a goal
+      await gamificationService.awardXP(50, reason: 'Goal completed');
+      
+      // Check for badges
+      await gamificationService.checkAndAwardBadges(
+        currentStreak: currentStreak,
+        maxStreak: maxStreak,
+        totalCompletedGoals: totalCompleted,
+      );
+    });
+    
     final isFirstLaunch = storageService.isFirstLaunch;
     runApp(
-      ChangeNotifierProvider(
-        create: (context) => storageService,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => storageService),
+          ChangeNotifierProvider(create: (context) => gamificationService),
+        ],
         child: MostImportantThingApp(initialRoute: isFirstLaunch ? OnboardingScreen() : HomeScreen()),
       ),
     );

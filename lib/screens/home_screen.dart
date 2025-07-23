@@ -100,8 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 'What is the most important thing to achieve today to advance your goals?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(height: 24),

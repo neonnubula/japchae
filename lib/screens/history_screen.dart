@@ -98,9 +98,10 @@ class HistoryScreen extends StatelessWidget {
                             )
                           : IconButton(
                               icon: const Icon(Icons.check),
-                              onPressed: () {
+                              onPressed: () async {
+                                final storageService = Provider.of<StorageService>(context, listen: false);
                                 goal.isCompleted = true;
-                                goal.save();
+                                await storageService.updateGoal(goal);
                               },
                             ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

@@ -59,6 +59,27 @@ class StorageService with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> completeMajorGoal() async {
+    final majorGoalText = northStarGoal;
+    if (majorGoalText.isNotEmpty) {
+      // Create a major goal entry in the goals box
+      final majorGoal = Goal()
+        ..text = majorGoalText
+        ..date = DateTime.now()
+        ..isCompleted = true
+        ..isMajorGoal = true;
+      
+      await _goalsBox.add(majorGoal);
+      
+      // Clear the north star goal since it's completed
+      await _settingsBox.put(_northStarGoalKey, '');
+      
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    }
+  }
+
   Future<void> setMultiDayGoal(String goal) async {
     await _settingsBox.put(_multiDayGoalKey, goal);
     notifyListeners();
@@ -121,7 +142,8 @@ class StorageService with ChangeNotifier {
         final newGoal = Goal()
           ..text = trimmedText
           ..date = DateTime.now()
-          ..isCompleted = false;
+          ..isCompleted = false
+          ..isMajorGoal = false;
         await _goalsBox.add(newGoal);
       }
       _updateCompletedDatesCache();

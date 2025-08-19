@@ -19,19 +19,22 @@ class GoalAdapter extends TypeAdapter<Goal> {
     return Goal()
       ..text = fields[0] as String
       ..date = fields[1] as DateTime
-      ..isCompleted = fields[2] as bool;
+      ..isCompleted = fields[2] as bool
+      ..isMajorGoal = fields[3] as bool;
   }
 
   @override
   void write(BinaryWriter writer, Goal obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.text)
       ..writeByte(1)
       ..write(obj.date)
       ..writeByte(2)
-      ..write(obj.isCompleted);
+      ..write(obj.isCompleted)
+      ..writeByte(3)
+      ..write(obj.isMajorGoal);
   }
 
   @override

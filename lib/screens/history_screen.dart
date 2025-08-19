@@ -33,32 +33,62 @@ class HistoryScreen extends StatelessWidget {
                 
                 return ElevatedGradientCard(
                   isDarkMode: isDarkMode,
-                  useGradient: false,
-                  elevation: 8.0,
+                  useGradient: goal.isMajorGoal, // Use gradient for major goals
+                  elevation: goal.isMajorGoal ? 12.0 : 8.0, // Higher elevation for major goals
                   borderRadius: 16.0,
                   padding: EdgeInsets.zero,
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Semantics(
-                    label: 'Goal: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
+                    label: '${goal.isMajorGoal ? 'Major Goal' : 'Goal'}: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
                     child: ListTile(
                       leading: Icon(
-                        goal.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
-                        color: goal.isCompleted ? Colors.green : Colors.grey,
+                        goal.isMajorGoal 
+                            ? Icons.emoji_events // Trophy icon for major goals
+                            : (goal.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked),
+                        color: goal.isMajorGoal 
+                            ? Colors.orange // Orange for major goals
+                            : (goal.isCompleted ? Colors.green : Colors.grey),
+                        size: goal.isMajorGoal ? 28 : 24, // Larger icon for major goals
                       ),
-                      title: Text(
-                        goal.text,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (goal.isMajorGoal) ...[
+                            Text(
+                              'MAJOR GOAL',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                          ],
+                          Text(
+                            goal.text,
+                            style: TextStyle(
+                              fontSize: goal.isMajorGoal ? 16 : 14,
+                              fontWeight: goal.isMajorGoal ? FontWeight.bold : FontWeight.normal,
+                              decoration: goal.isCompleted
+                                  ? TextDecoration.lineThrough
+                                  : TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                      subtitle: Text(
+                        DateFormat.yMMMd().format(goal.date),
                         style: TextStyle(
-                          decoration: goal.isCompleted
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
+                          fontWeight: goal.isMajorGoal ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
-                      subtitle: Text(DateFormat.yMMMd().format(goal.date)),
                       trailing: goal.isCompleted
                           ? IconButton(
                               icon: const Icon(Icons.share),
                               onPressed: () {
-                                Share.share('I completed my goal: "${goal.text}" on ${DateFormat.yMMMd().format(goal.date)} using the Most Important Thing app!');
+                                final goalType = goal.isMajorGoal ? 'major goal' : 'goal';
+                                Share.share('I completed my $goalType: "${goal.text}" on ${DateFormat.yMMMd().format(goal.date)} using the Most Important Thing app!');
                               },
                             )
                           : IconButton(

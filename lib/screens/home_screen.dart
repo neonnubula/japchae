@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 import 'package:most_important_thing/widgets/goal_celebration_popup.dart';
+import 'package:most_important_thing/widgets/major_goal_completion_popup.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,30 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  GestureDetector(
-                    onTap: () => _showEditGoalDialog(
-                      context,
-                      'Major Goal',
-                      storageService.northStarGoal,
-                      (newValue) async {
-                        final wasEmpty = storageService.northStarGoal.isEmpty;
-                        await storageService.setNorthStarGoal(newValue);
-                        
-                        // Show celebration if this is the first time setting a major goal
-                        if (wasEmpty && newValue.isNotEmpty && mounted) {
-                          _showGoalCelebration(context);
-                        }
-                      },
-                    ),
-                    child: _buildGoalCard(
-                      'MAJOR GOAL',
-                      storageService.northStarGoal.isEmpty
-                          ? 'Tap to set your goal'
-                          : storageService.northStarGoal,
-                      infoDescription:
-                          'Your Major Goal is the overarching objective that guides your daily focus.'
-                    ),
-                  ),
+                  _buildMajorGoalCard(storageService),
                   const SizedBox(height: 24),
                   // Streak counter
                   ElevatedGradientCard(
@@ -378,6 +356,138 @@ class _HomeScreenState extends State<HomeScreen> {
         onDismiss: () {
           Navigator.of(context).pop(); // Close the dialog
         },
+      ),
+    );
+  }
+
+  void _showMajorGoalCompletion(BuildContext context, String goalText) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must tap the button to dismiss
+      builder: (context) => MajorGoalCompletionPopup(
+        goalText: goalText,
+        onDismiss: () {
+          Navigator.of(context).pop(); // Close the dialog
+        },
+      ),
+    );
+  }
+
+  Widget _buildMajorGoalCard(StorageService storageService) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final hasMajorGoal = storageService.northStarGoal.isNotEmpty;
+    
+    return ElevatedGradientCard(
+      isDarkMode: isDarkMode,
+      useGradient: true,
+      elevation: 12.0,
+      borderRadius: 20.0,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'MAJOR GOAL',
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.labelSmall?.color,
+                  fontSize: 12,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.info_outline, size: 16),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Major Goal'),
+                      content: const Text('Your Major Goal is the overarching objective that guides your daily focus.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _showEditGoalDialog(
+                    context,
+                    'Major Goal',
+                    storageService.northStarGoal,
+                    (newValue) async {
+                      final wasEmpty = storageService.northStarGoal.isEmpty;
+                      await storageService.setNorthStarGoal(newValue);
+                      
+                      // Show celebration if this is the first time setting a major goal
+                      if (wasEmpty && newValue.isNotEmpty && mounted) {
+                        _showGoalCelebration(context);
+                      }
+                    },
+                  ),
+                  child: Text(
+                    hasMajorGoal ? storageService.northStarGoal : 'Tap to set your goal',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const Icon(Icons.edit, color: Colors.amber, size: 16),
+            ],
+          ),
+          if (hasMajorGoal) ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () async {
+                  final confirmed = await _showConfirmationDialog(
+                    context,
+                    'Complete Major Goal',
+                    'Are you sure you want to mark your major goal as completed? This will move it to your history.',
+                  );
+                  if (confirmed == true) {
+                    final goalText = storageService.northStarGoal;
+                    await storageService.completeMajorGoal();
+                    if (mounted) {
+                      _showMajorGoalCompletion(context, goalText);
+                    }
+                  }
+                },
+                child: const Text(
+                  'Mark as Completed 🏆',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

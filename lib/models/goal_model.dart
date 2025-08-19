@@ -12,4 +12,7 @@ class Goal extends HiveObject {
 
   @HiveField(2)
   late bool isCompleted;
+
+  @HiveField(3)
+  late bool isMajorGoal;
 } 

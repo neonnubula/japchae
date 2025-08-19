@@ -387,36 +387,42 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Column(
             children: [
-              Text(
-                'MAJOR GOAL',
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.labelSmall?.color,
-                  fontSize: 12,
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.info_outline, size: 16),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Major Goal'),
-                      content: const Text('Your Major Goal is the overarching objective that guides your daily focus.'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Close'),
-                        ),
-                      ],
+              Row(
+                children: [
+                  const Spacer(),
+                  Text(
+                    '🎯 YOUR MISSION 🎯',
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 14,
+                      letterSpacing: 2.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                  );
-                },
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline, size: 16),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Your Mission'),
+                          content: const Text('Your Mission is the overarching objective that guides your daily focus.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
+              const SizedBox(height: 4),
             ],
           ),
           const SizedBox(height: 8),
@@ -424,10 +430,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => _showEditGoalDialog(
-                    context,
-                    'Major Goal',
-                    storageService.northStarGoal,
+                                      onTap: () => _showEditGoalDialog(
+                      context,
+                      'Your Mission',
+                      storageService.northStarGoal,
                     (newValue) async {
                       final wasEmpty = storageService.northStarGoal.isEmpty;
                       await storageService.setNorthStarGoal(newValue);
@@ -439,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   child: Text(
-                    hasMajorGoal ? storageService.northStarGoal : 'Tap to set your goal',
+                    hasMajorGoal ? storageService.northStarGoal : 'Tap to set your mission',
                     style: TextStyle(
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 16,
@@ -466,8 +472,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   final confirmed = await _showConfirmationDialog(
                     context,
-                    'Complete Major Goal',
-                    'Are you sure you want to mark your major goal as completed? This will move it to your history.',
+                    'Mission Accomplished!',
+                    'Are you sure you want to mark your mission as completed? This will move it to your history.',
                   );
                   if (confirmed == true) {
                     final goalText = storageService.northStarGoal;

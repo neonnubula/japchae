@@ -50,7 +50,7 @@ class GoalCelebrationPopup extends StatelessWidget {
             
             // Celebration message
             const Text(
-              'You just set your first major goal! This is the first step towards achieving something incredible.',
+              'You just set your first mission! This is the first step towards achieving something incredible.',
               style: TextStyle(
                 fontSize: 16,
                 height: 1.4,

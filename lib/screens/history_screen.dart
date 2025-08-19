@@ -55,12 +55,12 @@ class HistoryScreen extends StatelessWidget {
                         children: [
                           if (goal.isMajorGoal) ...[
                             Text(
-                              'MAJOR GOAL',
+                              '🎯 MISSION ACCOMPLISHED 🎯',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.orange,
-                                letterSpacing: 1.0,
+                                letterSpacing: 1.5,
                               ),
                             ),
                             const SizedBox(height: 4),

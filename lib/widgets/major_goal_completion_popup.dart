@@ -40,7 +40,7 @@ class MajorGoalCompletionPopup extends StatelessWidget {
             
             // Congratulations title
             const Text(
-              'MAJOR GOAL ACHIEVED!',
+              'MISSION ACCOMPLISHED!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class MajorGoalCompletionPopup extends StatelessWidget {
             
             // Celebration message
             const Text(
-              'You did it! You achieved something incredible that will change your life forever.',
+              'You did it! You accomplished your mission and achieved something incredible that will change your life forever.',
               style: TextStyle(
                 fontSize: 16,
                 height: 1.4,
@@ -89,7 +89,7 @@ class MajorGoalCompletionPopup extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                'When you\'re ready for your next big goal, we\'ll be here to help you achieve it! 🚀',
+                'When you\'re ready for your next mission, we\'ll be here to help you achieve it! 🚀',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,

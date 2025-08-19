@@ -6,6 +6,7 @@ import 'package:most_important_thing/services/storage_service.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
+import 'package:most_important_thing/widgets/goal_celebration_popup.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,7 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       context,
                       'Major Goal',
                       storageService.northStarGoal,
-                      (newValue) => storageService.setNorthStarGoal(newValue),
+                      (newValue) async {
+                        final wasEmpty = storageService.northStarGoal.isEmpty;
+                        await storageService.setNorthStarGoal(newValue);
+                        
+                        // Show celebration if this is the first time setting a major goal
+                        if (wasEmpty && newValue.isNotEmpty && mounted) {
+                          _showGoalCelebration(context);
+                        }
+                      },
                     ),
                     child: _buildGoalCard(
                       'MAJOR GOAL',
@@ -358,6 +367,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         );
       },
+    );
+  }
+
+  void _showGoalCelebration(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must tap the button to dismiss
+      builder: (context) => GoalCelebrationPopup(
+        onDismiss: () {
+          Navigator.of(context).pop(); // Close the dialog
+        },
+      ),
     );
   }
 

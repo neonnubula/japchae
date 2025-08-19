@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
+import 'package:most_important_thing/screens/onboarding_page2.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
@@ -105,11 +106,9 @@ class OnboardingScreen extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // TODO: Navigate to next onboarding page
-                      Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                        MaterialPageRoute(builder: (context) => const OnboardingPage2()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -122,7 +121,7 @@ class OnboardingScreen extends StatelessWidget {
                       elevation: 8,
                     ),
                     child: const Text(
-                      'Let\'s Get Started! 🚀',
+                      'Next: Case Study 1 →',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

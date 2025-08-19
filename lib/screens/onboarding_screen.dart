@@ -21,61 +21,114 @@ class OnboardingScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Beautiful app header
+                // Beautiful app header - smaller to fit better
                 const AppHeader(
-                  fontSize: 28.0,
-                  padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
+                  fontSize: 24.0,
+                  padding: EdgeInsets.only(top: 16.0, bottom: 20.0),
                 ),
 
-                Text(
-                  'Welcome to Most Important Thing',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
+                // Big celebration emoji - smaller to fit better
                 const Text(
-                  '🎯',
-                  style: TextStyle(fontSize: 48),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 28),
-                _buildSection(
-                  context,
-                  title: 'The Problem',
-                  icon: '😵',
-                  body: 'We over-stuff our days, stall momentum, and end up achieving less over the year.'
-                ),
-                const SizedBox(height: 20),
-                _buildSection(
-                  context,
-                  title: 'The Solution',
-                  icon: '🚀',
-                  body: 'Commit to ONE Most Important Thing you can realistically finish today. Small wins ➜ daily momentum ➜ big results.'
-                ),
-                const SizedBox(height: 20),
-                _buildSection(
-                  context,
-                  title: 'Your Edge',
-                  icon: '⚡',
-                  body: 'Smart reminders keep you focused. Turn on notifications so you never miss your daily win.'
-                ),
-                const SizedBox(height: 28),
-                const Text(
-                  '🔥 Ready to build momentum?',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  '🎉',
+                  style: TextStyle(fontSize: 60),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
-                    // TODO: Request notification permissions here
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    );
-                  },
-                  child: const Text('🚀 Get Started'),
+                
+                // Exciting welcome message
+                Text(
+                  'CONGRATULATIONS!',
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple,
+                    fontSize: 24,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                
+                Text(
+                  'You just made a DECISION that will change your life!',
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                
+                // Celebration card - more compact
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.purple.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        '🎯',
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'You\'re about to discover the secret that separates dreamers from ACHIEVERS!',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 16,
+                          height: 1.3,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Motivational text
+                Text(
+                  'Daily Progress No Matter How Small Is The Key\n\nTogether We Will Be Unstoppable',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    fontSize: 16,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                
+                // Next button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // TODO: Navigate to next onboarding page
+                      Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 8,
+                    ),
+                    child: const Text(
+                      'Let\'s Get Started! 🚀',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

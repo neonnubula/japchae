@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
-import 'package:most_important_thing/screens/onboarding_page4.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 
-class OnboardingPage3 extends StatelessWidget {
-  const OnboardingPage3({super.key});
+class OnboardingPage6 extends StatelessWidget {
+  const OnboardingPage6({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +27,9 @@ class OnboardingPage3 extends StatelessWidget {
                   padding: EdgeInsets.only(top: 12.0, bottom: 16.0),
                 ),
 
-                // Case Study Header
+                // Step Header
                 Text(
-                  'CASE STUDY 2',
+                  'STEP 3',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.purple,
@@ -41,38 +40,26 @@ class OnboardingPage3 extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Ray's emoji
+                // Step emoji
                 const Text(
-                  '🍔',
+                  '✅',
                   style: TextStyle(fontSize: 50),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
 
-                // Ray's name
+                // Step title
                 Text(
-                  'RAY KROC',
+                  'COMPLETE & TRACK',
                   style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-
-                // His job
-                Text(
-                  'Milkshake machine salesman at age 52',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 16,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 20),
 
-                // The story card
+                // Main message card
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -86,34 +73,34 @@ class OnboardingPage3 extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Every day after selling machines, he chipped away at his dream:',
+                        'When you complete your daily task:',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Building the world\'s biggest restaurant chain',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Action steps
+                      _buildActionStep('📱', 'Open the app'),
+                      const SizedBox(height: 12),
+                      _buildActionStep('✅', 'Hit "Complete"'),
+                      const SizedBox(height: 12),
+                      _buildActionStep('📊', 'Check your stats'),
+                      const SizedBox(height: 12),
+                      _buildActionStep('📈', 'Watch your streak grow'),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // The result
+                // Features card
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.orange.withOpacity(0.2), Colors.red.withOpacity(0.2)],
+                      colors: [Colors.green.withOpacity(0.2), Colors.teal.withOpacity(0.2)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -122,41 +109,69 @@ class OnboardingPage3 extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        '🏆',
+                        '🎯',
                         style: TextStyle(fontSize: 32),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'MCDONALD\'S: WORLD\'S LARGEST',
+                        'Track Your Progress',
                         style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(
-                        '38,000+ restaurants worldwide',
+                        '• Stats page: See your streak and total goals\n• History: Mark off any missed goals you\'ve caught up on\n• Celebrate every win, no matter how small!',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontSize: 14,
-                          color: Colors.grey,
+                          height: 1.4,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
-                // Key message
-                Text(
-                  'Age doesn\'t matter. Daily progress does. Start today, chip away every day.',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
+                // Final encouragement
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.purple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.purple.withOpacity(0.3),
+                      width: 1,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
+                  child: Column(
+                    children: [
+                      const Text(
+                        '🚀',
+                        style: TextStyle(fontSize: 32),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'You\'re Ready!',
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Every day you complete a task, you\'re building momentum toward your biggest goal. Let\'s start your success story!',
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 32),
 
@@ -186,9 +201,10 @@ class OnboardingPage3 extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
+                          Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const OnboardingPage4()),
+                            MaterialPageRoute(builder: (context) => const HomeScreen()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -201,7 +217,7 @@ class OnboardingPage3 extends StatelessWidget {
                           elevation: 4,
                         ),
                         child: const Text(
-                          'How This Works →',
+                          'Let\'s Start! 🚀',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -215,6 +231,27 @@ class OnboardingPage3 extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildActionStep(String emoji, String action) {
+    return Row(
+      children: [
+        Text(
+          emoji,
+          style: const TextStyle(fontSize: 20),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            action,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

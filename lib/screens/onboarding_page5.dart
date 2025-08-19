@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
-import 'package:most_important_thing/screens/onboarding_page4.dart';
+import 'package:most_important_thing/screens/onboarding_page6.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 
-class OnboardingPage3 extends StatelessWidget {
-  const OnboardingPage3({super.key});
+class OnboardingPage5 extends StatelessWidget {
+  const OnboardingPage5({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +28,9 @@ class OnboardingPage3 extends StatelessWidget {
                   padding: EdgeInsets.only(top: 12.0, bottom: 16.0),
                 ),
 
-                // Case Study Header
+                // Step Header
                 Text(
-                  'CASE STUDY 2',
+                  'STEP 2',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.purple,
@@ -41,38 +41,26 @@ class OnboardingPage3 extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Ray's emoji
+                // Step emoji
                 const Text(
-                  '🍔',
+                  '📝',
                   style: TextStyle(fontSize: 50),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
 
-                // Ray's name
+                // Step title
                 Text(
-                  'RAY KROC',
+                  'PICK YOUR DAILY TASK',
                   style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
-
-                // His job
-                Text(
-                  'Milkshake machine salesman at age 52',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    fontSize: 16,
-                    color: Colors.grey,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 20),
 
-                // The story card
+                // Main message card
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -86,34 +74,34 @@ class OnboardingPage3 extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Every day after selling machines, he chipped away at his dream:',
+                        'Each day, choose ONE task based on your energy and time:',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Building the world\'s biggest restaurant chain',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.purple,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
+                      const SizedBox(height: 20),
+                      
+                      // Task examples
+                      _buildTaskExample('😴', 'Busy Day', 'Just research one company'),
+                      const SizedBox(height: 12),
+                      _buildTaskExample('⚡', 'Good Energy', 'Apply to 3 jobs'),
+                      const SizedBox(height: 12),
+                      _buildTaskExample('🔥', 'High Capacity', 'Finish website homepage'),
+                      const SizedBox(height: 12),
+                      _buildTaskExample('📈', 'Progress Day', 'Work on project for 30 min'),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
 
-                // The result
+                // Key insight card
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.orange.withOpacity(0.2), Colors.red.withOpacity(0.2)],
+                      colors: [Colors.orange.withOpacity(0.2), Colors.yellow.withOpacity(0.2)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -122,41 +110,29 @@ class OnboardingPage3 extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        '🏆',
+                        '💡',
                         style: TextStyle(fontSize: 32),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'MCDONALD\'S: WORLD\'S LARGEST',
+                        'The Key Insight',
                         style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Text(
-                        '38,000+ restaurants worldwide',
+                        'It\'s better to do something small every day than something big once a week. Consistency beats intensity!',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontSize: 14,
-                          color: Colors.grey,
+                          height: 1.4,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 24),
-
-                // Key message
-                Text(
-                  'Age doesn\'t matter. Daily progress does. Start today, chip away every day.',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
-                  ),
-                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
 
@@ -188,7 +164,7 @@ class OnboardingPage3 extends StatelessWidget {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => const OnboardingPage4()),
+                            MaterialPageRoute(builder: (context) => const OnboardingPage6()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -201,7 +177,7 @@ class OnboardingPage3 extends StatelessWidget {
                           elevation: 4,
                         ),
                         child: const Text(
-                          'How This Works →',
+                          'Step 3 →',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -214,6 +190,51 @@ class OnboardingPage3 extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTaskExample(String emoji, String energy, String task) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.purple.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(
+            emoji,
+            style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  energy,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.purple,
+                  ),
+                ),
+                Text(
+                  task,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

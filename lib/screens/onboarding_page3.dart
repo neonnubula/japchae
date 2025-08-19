@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:most_important_thing/screens/home_screen.dart';
-import 'package:most_important_thing/screens/onboarding_page3.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
 
-class OnboardingPage2 extends StatelessWidget {
-  const OnboardingPage2({super.key});
+class OnboardingPage3 extends StatelessWidget {
+  const OnboardingPage3({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class OnboardingPage2 extends StatelessWidget {
 
                 // Case Study Header
                 Text(
-                  'CASE STUDY 1',
+                  'CASE STUDY 2',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.purple,
@@ -41,17 +40,17 @@ class OnboardingPage2 extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Sara's emoji
+                // Ray's emoji
                 const Text(
-                  '👗',
+                  '🍔',
                   style: TextStyle(fontSize: 50),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
 
-                // Sara's name
+                // Ray's name
                 Text(
-                  'SARA BLAKELY',
+                  'RAY KROC',
                   style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
@@ -60,9 +59,9 @@ class OnboardingPage2 extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
 
-                // Her job
+                // His job
                 Text(
-                  'Selling fax machines door-to-door',
+                  'Milkshake machine salesman at age 52',
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     fontSize: 16,
                     color: Colors.grey,
@@ -86,7 +85,7 @@ class OnboardingPage2 extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        'Every night after work, she chipped away at her dream:',
+                        'Every day after selling machines, he chipped away at his dream:',
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -95,7 +94,7 @@ class OnboardingPage2 extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Creating the perfect undergarment that would revolutionize women\'s fashion',
+                        'Building the world\'s biggest restaurant chain',
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -113,7 +112,7 @@ class OnboardingPage2 extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.purple.withOpacity(0.2), Colors.pink.withOpacity(0.2)],
+                      colors: [Colors.orange.withOpacity(0.2), Colors.red.withOpacity(0.2)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -122,21 +121,21 @@ class OnboardingPage2 extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        '💎',
+                        '🏆',
                         style: TextStyle(fontSize: 32),
                       ),
                       const SizedBox(height: 8),
-                                             Text(
-                         'SPANX: \$1 BILLION EMPIRE',
-                         style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                           fontWeight: FontWeight.bold,
-                           fontSize: 16,
-                         ),
-                         textAlign: TextAlign.center,
-                       ),
+                      Text(
+                        'MCDONALD\'S: WORLD\'S LARGEST',
+                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 4),
                       Text(
-                        'Youngest self-made female billionaire',
+                        '38,000+ restaurants worldwide',
                         style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontSize: 14,
                           color: Colors.grey,
@@ -150,7 +149,7 @@ class OnboardingPage2 extends StatelessWidget {
 
                 // Key message
                 Text(
-                  'Daily progress on your dream, no matter how small, compounds into extraordinary results.',
+                  'Age doesn\'t matter. Daily progress does. Start today, chip away every day.',
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -186,9 +185,11 @@ class OnboardingPage2 extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
+                          // TODO: Navigate to next onboarding page
+                          Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
+                          Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const OnboardingPage3()),
+                            MaterialPageRoute(builder: (context) => const HomeScreen()),
                           );
                         },
                         style: ElevatedButton.styleFrom(
@@ -201,7 +202,7 @@ class OnboardingPage2 extends StatelessWidget {
                           elevation: 4,
                         ),
                         child: const Text(
-                          'Case Study 2 →',
+                          'How This Works →',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),

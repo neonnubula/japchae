@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:most_important_thing/screens/home_screen.dart';
+import 'package:most_important_thing/screens/main_app_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:most_important_thing/services/storage_service.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
@@ -204,7 +204,7 @@ class OnboardingPage6 extends StatelessWidget {
                           Provider.of<StorageService>(context, listen: false).setFirstLaunchCompleted();
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
+                            MaterialPageRoute(builder: (context) => const MainAppScreen()),
                           );
                         },
                         style: ElevatedButton.styleFrom(

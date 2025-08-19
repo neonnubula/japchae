@@ -15,19 +15,13 @@ class MenuScreen extends StatelessWidget {
       isDarkMode: isDarkMode,
       child: Scaffold(
         backgroundColor: Colors.transparent, // Let gradient show through
-        appBar: AppBar(
-          title: const AppHeader(
-            fontSize: 20.0,
-            padding: EdgeInsets.zero,
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 70.0, // Optimized for text-only header
-        ),
-        body: Column(
-          children: [
-            const SizedBox(height: 20),
+
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
             ElevatedGradientCard(
               isDarkMode: isDarkMode,
               useGradient: true,
@@ -109,7 +103,9 @@ class MenuScreen extends StatelessWidget {
                 },
               ),
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
     );

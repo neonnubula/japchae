@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:most_important_thing/models/goal_model.dart';
-import 'package:most_important_thing/screens/home_screen.dart';
+import 'package:most_important_thing/screens/main_app_screen.dart';
 import 'package:most_important_thing/screens/onboarding_screen.dart';
 import 'package:most_important_thing/services/notification_service.dart';
 import 'package:most_important_thing/services/storage_service.dart';
@@ -30,7 +30,7 @@ void main() async {
     runApp(
       ChangeNotifierProvider(
         create: (context) => storageService,
-        child: MostImportantThingApp(initialRoute: isFirstLaunch ? OnboardingScreen() : HomeScreen()),
+        child: MostImportantThingApp(initialRoute: isFirstLaunch ? OnboardingScreen() : MainAppScreen()),
       ),
     );
   } catch (e) {

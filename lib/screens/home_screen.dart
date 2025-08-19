@@ -28,16 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
       isDarkMode: isDarkMode,
       child: Scaffold(
         backgroundColor: Colors.transparent, // Let gradient show through
-        appBar: AppBar(
-          title: const AppHeader(
-            fontSize: 20.0,
-            padding: EdgeInsets.zero,
-          ),
-          elevation: 0,
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          toolbarHeight: 70.0, // Optimized for text-only header
-        ),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(responsivePadding),
@@ -271,45 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          color: Theme.of(context).cardColor,
-          elevation: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const HistoryScreen()),
-                  );
-                },
-                icon: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
-                label: Text('Goal History', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
-              ),
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const StreakScreen()),
-                  );
-                },
-                icon: const Icon(Icons.local_fire_department, color: Colors.orange),
-                label: Text('Stats', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
-              ),
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MenuScreen()),
-                  );
-                },
-                icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
-                label: Text('Menu', style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color)),
-              ),
-            ],
           ),
         ),
       ),

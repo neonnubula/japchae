@@ -16,24 +16,16 @@ class StreakScreen extends StatelessWidget {
       isDarkMode: isDarkMode,
       child: Scaffold(
         backgroundColor: Colors.transparent, // Let gradient show through
-        appBar: AppBar(
-          title: const AppHeader(
-            fontSize: 20.0,
-            padding: EdgeInsets.zero,
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 70.0, // Optimized for text-only header
-        ),
-        body: Consumer<StorageService>(
-          builder: (context, storage, _) {
-            final streak = storage.getCurrentStreak();
-            final allGoals = storage.getAllGoals();
-            final completedGoals = allGoals.where((g) => g.isCompleted).toList();
-            
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+
+        body: SafeArea(
+          child: Consumer<StorageService>(
+            builder: (context, storage, _) {
+              final streak = storage.getCurrentStreak();
+              final allGoals = storage.getAllGoals();
+              final completedGoals = allGoals.where((g) => g.isCompleted).toList();
+              
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
               child: Column(
                 children: [
                   // Main streak display
@@ -168,7 +160,8 @@ class StreakScreen extends StatelessWidget {
                 ],
               ),
             );
-          },
+            },
+          ),
         ),
       ),
     );

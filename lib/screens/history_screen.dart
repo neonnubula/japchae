@@ -16,42 +16,7 @@ class HistoryScreen extends StatelessWidget {
       isDarkMode: isDarkMode,
       child: Scaffold(
         backgroundColor: Colors.transparent, // Let gradient show through
-        appBar: AppBar(
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: const AppHeader(
-            fontSize: 20.0,
-            padding: EdgeInsets.zero,
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          toolbarHeight: 70.0, // Optimized for text-only header
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.share),
-              tooltip: 'Export all goals',
-              onPressed: () async {
-                try {
-                  final storageService = Provider.of<StorageService>(context, listen: false);
-                  final exportData = storageService.exportData();
-                  await Share.share(
-                    exportData,
-                    subject: 'My Goals History - Most Important Thing App',
-                  );
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error exporting: ${e.toString()}')),
-                    );
-                  }
-                }
-              },
-            ),
-          ],
-        ),
+
         body: Consumer<StorageService>(
           builder: (context, storageService, child) {
             final goals = storageService.getAllGoals();

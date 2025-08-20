@@ -22,7 +22,10 @@ void main() async {
     await notificationService.init();
 
     await Hive.initFlutter();
-    Hive.registerAdapter(GoalAdapter());
+    // Register our custom adapter that handles migration
+    if (!Hive.isAdapterRegistered(0)) {
+      Hive.registerAdapter(GoalAdapter());
+    }
 
     final storageService = StorageService(notificationService);
     await storageService.init();

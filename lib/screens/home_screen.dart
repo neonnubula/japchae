@@ -3,6 +3,7 @@ import 'package:most_important_thing/screens/history_screen.dart';
 import 'package:most_important_thing/screens/streak_screen.dart';
 import 'package:most_important_thing/screens/menu_screen.dart'; // Added import for MenuScreen
 import 'package:most_important_thing/services/storage_service.dart';
+import 'package:most_important_thing/models/goal_model.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:most_important_thing/widgets/app_header.dart';
@@ -245,6 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     },
                   ),
+                  const SizedBox(height: 24),
+                  _buildExtraCreditSection(storageService, isDarkMode),
                 ],
               ),
             ),
@@ -495,6 +498,341 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildExtraCreditSection(StorageService storageService, bool isDarkMode) {
+    final extraCreditTasks = storageService.getTodayExtraCreditTasks();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          "Want to achieve more today?",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedGradientCard(
+          isDarkMode: isDarkMode,
+          useGradient: true,
+          elevation: 8.0,
+          borderRadius: 16.0,
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: [
+              if (extraCreditTasks.isEmpty) ...[
+                const Text(
+                  "Add extra tasks to boost your productivity!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ] else ...[
+                ...extraCreditTasks.map((task) => _buildExtraCreditTaskCard(task, storageService, isDarkMode)),
+                const SizedBox(height: 16),
+              ],
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => _showAddExtraCreditDialog(context, storageService),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text(
+                    "Add Extra Task",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6A4C93), // Purple for extra credit
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExtraCreditTaskCard(Goal task, StorageService storageService, bool isDarkMode) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFF6A4C93).withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      size: 16,
+                      color: const Color(0xFF6A4C93),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        task.text,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          decoration: task.isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: task.isCompleted
+                              ? Colors.grey[600]
+                              : Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!task.isCompleted) ...[
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 18),
+                  onPressed: () => _showEditExtraCreditDialog(context, task, storageService),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.check_circle_outline, size: 20),
+                  onPressed: () async {
+                    final confirmed = await _showConfirmationDialog(
+                      context,
+                      'Complete Extra Task',
+                      'Mark this extra task as completed?',
+                    );
+                    if (confirmed == true) {
+                      try {
+                        task.isCompleted = true;
+                        await storageService.updateExtraCreditTask(task);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Extra task completed! ⭐')),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString()}')),
+                          );
+                        }
+                      }
+                    }
+                  },
+                ),
+              ] else ...[
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  onPressed: () async {
+                    final confirmed = await _showConfirmationDialog(
+                      context,
+                      'Delete Task',
+                      'Remove this completed task?',
+                    );
+                    if (confirmed == true) {
+                      try {
+                        await storageService.deleteExtraCreditTask(task);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Task removed')),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString()}')),
+                          );
+                        }
+                      }
+                    }
+                  },
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAddExtraCreditDialog(BuildContext context, StorageService storageService) async {
+    final TextEditingController controller = TextEditingController();
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          title: const Text(
+            'Add Extra Task',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: TextField(
+            controller: controller,
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
+              hintText: 'Enter your extra task...',
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            autofocus: true,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6A4C93),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Add'),
+              onPressed: () async {
+                final text = controller.text.trim();
+                if (text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter a task')),
+                  );
+                  return;
+                }
+                
+                try {
+                  await storageService.addExtraCreditTask(text);
+                  Navigator.of(context).pop();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Extra task added! ⭐')),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${e.toString()}')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showEditExtraCreditDialog(BuildContext context, Goal task, StorageService storageService) async {
+    final TextEditingController controller = TextEditingController(text: task.text);
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          title: const Text(
+            'Edit Extra Task',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: TextField(
+            controller: controller,
+            style: const TextStyle(color: Colors.black),
+            decoration: InputDecoration(
+              hintText: 'Enter your task',
+              hintStyle: TextStyle(color: Colors.grey[500]),
+              filled: true,
+              fillColor: Colors.grey[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+            autofocus: true,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6A4C93),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Save'),
+              onPressed: () async {
+                final text = controller.text.trim();
+                if (text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter a task')),
+                  );
+                  return;
+                }
+                
+                try {
+                  task.text = text;
+                  await storageService.updateExtraCreditTask(task);
+                  Navigator.of(context).pop();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Task updated!')),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${e.toString()}')),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 

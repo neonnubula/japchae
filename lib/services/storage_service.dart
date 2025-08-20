@@ -35,8 +35,17 @@ class StorageService with ChangeNotifier {
       ]);
       final encryptionCipher = HiveAesCipher(encryptionKey);
       
-      _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);
-      _settingsBox = await Hive.openBox(_settingsBoxName, encryptionCipher: encryptionCipher);
+      try {
+        _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);
+        _settingsBox = await Hive.openBox(_settingsBoxName, encryptionCipher: encryptionCipher);
+      } catch (e) {
+        // If there's a migration error, clear the old data and recreate
+        debugPrint('Migration error detected, clearing old data: $e');
+        await Hive.deleteBoxFromDisk(_goalsBoxName);
+        await Hive.deleteBoxFromDisk(_settingsBoxName);
+        _goalsBox = await Hive.openBox<Goal>(_goalsBoxName, encryptionCipher: encryptionCipher);
+        _settingsBox = await Hive.openBox(_settingsBoxName, encryptionCipher: encryptionCipher);
+      }
       
       if (isFirstLaunch) {
         // Optionally handle here, but main will route
@@ -67,7 +76,8 @@ class StorageService with ChangeNotifier {
         ..text = majorGoalText
         ..date = DateTime.now()
         ..isCompleted = true
-        ..isMajorGoal = true;
+        ..isMajorGoal = true
+        ..isExtraCredit = false;
       
       await _goalsBox.add(majorGoal);
       
@@ -119,11 +129,75 @@ class StorageService with ChangeNotifier {
     for (final goal in _goalsBox.values) {
       if (goal.date.year == now.year &&
           goal.date.month == now.month &&
-          goal.date.day == now.day) {
+          goal.date.day == now.day &&
+          !goal.isExtraCredit) {
         return goal;
       }
     }
     return null;
+  }
+
+  // Get today's extra credit tasks
+  List<Goal> getTodayExtraCreditTasks() {
+    final now = DateTime.now();
+    return _goalsBox.values
+        .where((goal) => goal.date.year == now.year &&
+            goal.date.month == now.month &&
+            goal.date.day == now.day &&
+            goal.isExtraCredit)
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  // Add extra credit task
+  Future<void> addExtraCreditTask(String text) async {
+    try {
+      final trimmedText = text.trim();
+      if (trimmedText.isEmpty) {
+        throw Exception('Task cannot be empty');
+      }
+      
+      final newTask = Goal()
+        ..text = trimmedText
+        ..date = DateTime.now()
+        ..isCompleted = false
+        ..isMajorGoal = false
+        ..isExtraCredit = true;
+      
+      await _goalsBox.add(newTask);
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error adding extra credit task: $e');
+      rethrow;
+    }
+  }
+
+  // Update extra credit task
+  Future<void> updateExtraCreditTask(Goal task) async {
+    try {
+      await task.save();
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating extra credit task: $e');
+      throw Exception('Failed to update task. Please try again.');
+    }
+  }
+
+  // Delete extra credit task
+  Future<void> deleteExtraCreditTask(Goal task) async {
+    try {
+      await task.delete();
+      _updateCompletedDatesCache();
+      _cachedStreak = null; // Invalidate cache
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error deleting extra credit task: $e');
+      throw Exception('Failed to delete task. Please try again.');
+    }
   }
 
   // Convenience method to create or update today's goal text
@@ -143,7 +217,8 @@ class StorageService with ChangeNotifier {
           ..text = trimmedText
           ..date = DateTime.now()
           ..isCompleted = false
-          ..isMajorGoal = false;
+          ..isMajorGoal = false
+          ..isExtraCredit = false;
         await _goalsBox.add(newGoal);
       }
       _updateCompletedDatesCache();

@@ -39,15 +39,19 @@ class HistoryScreen extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Semantics(
-                    label: '${goal.isMajorGoal ? 'Major Goal' : 'Goal'}: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
+                    label: '${goal.isMajorGoal ? 'Major Goal' : goal.isExtraCredit ? 'Extra Credit Task' : 'Goal'}: ${goal.text}, ${goal.isCompleted ? 'completed' : 'not completed'} on ${DateFormat.yMMMd().format(goal.date)}',
                     child: ListTile(
                       leading: Icon(
                         goal.isMajorGoal 
                             ? Icons.emoji_events // Trophy icon for major goals
-                            : (goal.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked),
+                            : goal.isExtraCredit
+                                ? Icons.star // Star icon for extra credit tasks
+                                : (goal.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked),
                         color: goal.isMajorGoal 
                             ? Colors.orange // Orange for major goals
-                            : (goal.isCompleted ? Colors.green : Colors.grey),
+                            : goal.isExtraCredit
+                                ? const Color(0xFF6A4C93) // Purple for extra credit
+                                : (goal.isCompleted ? Colors.green : Colors.grey),
                         size: goal.isMajorGoal ? 28 : 24, // Larger icon for major goals
                       ),
                       title: Column(
@@ -60,6 +64,17 @@ class HistoryScreen extends StatelessWidget {
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.orange,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                          ] else if (goal.isExtraCredit) ...[
+                            Text(
+                              '⭐ EXTRA CREDIT ⭐',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF6A4C93),
                                 letterSpacing: 1.5,
                               ),
                             ),
@@ -87,7 +102,7 @@ class HistoryScreen extends StatelessWidget {
                           ? IconButton(
                               icon: const Icon(Icons.share),
                               onPressed: () {
-                                final goalType = goal.isMajorGoal ? 'major goal' : 'goal';
+                                final goalType = goal.isMajorGoal ? 'major goal' : goal.isExtraCredit ? 'extra credit task' : 'goal';
                                 Share.share('I completed my $goalType: "${goal.text}" on ${DateFormat.yMMMd().format(goal.date)} using the Most Important Thing app!');
                               },
                             )
@@ -96,7 +111,11 @@ class HistoryScreen extends StatelessWidget {
                               onPressed: () async {
                                 final storageService = Provider.of<StorageService>(context, listen: false);
                                 goal.isCompleted = true;
-                                await storageService.updateGoal(goal);
+                                if (goal.isExtraCredit) {
+                                  await storageService.updateExtraCreditTask(goal);
+                                } else {
+                                  await storageService.updateGoal(goal);
+                                }
                               },
                             ),
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

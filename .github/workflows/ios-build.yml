@@ -175,6 +175,7 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE="$PROFILE_UUID" \
+            IPHONEOS_DEPLOYMENT_TARGET=12.0 \
             clean archive
 
       - name: Create ExportOptions.plist for manual signing
